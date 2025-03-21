@@ -1,0 +1,65 @@
+{
+  "controller": 0,
+  "controllerTypes": {
+    "ZoneValveController": 0,
+    "ZonePumpController": 1,
+    "FanCoilController": 2
+  },
+  "thermostatType": {
+    "CLASSIC": 0,
+    "THREE_WIRE": 1,
+    "NETWORKED": 2
+  },
+  "components": [
+    {
+      "settingType": "controlledZoneOutputs",
+      "data": [
+        {
+          "zoneName": "livingRoomZoneName",
+          "thermostatID": 1,
+          "setPoint": 23,
+          "isCool": true
+        },
+        {
+          "zoneName": "bedroomZoneName",
+          "thermostatID": 2,
+          "setPoint": 23,
+          "isCool": false
+        },
+        {
+          "zoneName": "basementZoneName",
+          "thermostatID": 7,
+          "setPoint": 23,
+          "isCool": true
+        },
+        {
+          "zoneName": "topFloorZoneName",
+          "thermostatID": 4,
+          "setPoint": 23,
+          "isCool": true
+        }
+      ]
+    },
+    {
+      "settingType": "Thermostat",
+      "data": [
+        {
+          "name": "thermostatName",
+          "type": 1
+        },
+        {
+          "name": "thermostatName",
+          "type": 2
+        },
+        {
+          "name": "thermostatName",
+          "type": 0
+        },
+        {
+          "name": "thermostatName",
+          "type": 1
+        }
+      ]
+    }
+  ]
+}

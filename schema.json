@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ClimaFy Settings",
+  "type": "object",
+  "properties": {
+    "controller": { "type": "integer" },
+    "controllerTypes": { "type": "object" },
+    "thermostatTypes": { "type": "object" },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "settingType": { "type": "string" },
+          "data": {
+            "type": "array",
+            "properties": {
+              "zoneName": { "type": "string" },
+              "thermostatID": { "type": "integer" },
+              "setPoint": { "type": "float" },
+              "isCool": { "type": "boolean" },
+              "name": { "type": "string" },
+              "type": { "type": "integer" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

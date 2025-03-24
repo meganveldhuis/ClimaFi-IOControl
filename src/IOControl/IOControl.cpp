@@ -1,35 +1,6 @@
 #include "IOControl.h"
-#include <vector>
 
-JsonDocument doc; // Allocate JsonDocument globally
-
-class controlledZoneOutputs {
-    public:
-        String zoneName;
-        int thermostatID;
-        double setPoint;
-        bool isCool;
-
-        controlledZoneOutputs(String zoneName, int thermostatID, double setPoint, bool isCool){
-            this->zoneName = zoneName;
-            this->thermostatID = thermostatID;
-            this->setPoint = setPoint;
-            this->isCool = isCool;
-        }
-
-        void show(){
-            Serial.printf("Zone Name: %s\n", zoneName);
-            Serial.printf("Thermostat ID: %d\n", thermostatID);
-            Serial.printf("Set Point: %d\n", setPoint);
-            Serial.printf("Is Cool: %s\n", isCool);
-        }
-};
-
-class thermostat {
-    public:
-        String name;
-        String type;
-};
+JsonDocument doc; // TODO: move this to .h file
 
 void formatLittleFS() {
   Serial.println("Formatting LittleFS...");
@@ -72,9 +43,8 @@ void controlLoop(){
 }
 
 void createControllerClasses(){
-    // int controllerInt = ;
     String controller;
-    std::vector<controlledZoneOutputs> zoneOutputsList;
+    std::vector<zoneOutputs> zoneOutputsList;
 
     JsonObject controllerTypes = doc["controllerTypes"];
     JsonArray components = doc["components"];
@@ -87,30 +57,32 @@ void createControllerClasses(){
     if(controller == "ZoneValveController"){
         for (JsonObject component : components){
             JsonArray data = component["data"];
+            
             if(component["settingType"] == "controlledZoneOutputs"){
                 for (JsonObject dataItem : data) {
                     Serial.println("creating class instance");
-                    String zoneName = dataItem["zoneName"].as<String>();
-                    int thermostatID = dataItem["thermostatID"].as<int>();
-                    double setPoint = dataItem["setPoint"].as<double>();
-                    bool isCool = dataItem["isCool"].as<bool>();
-                    
-                    controlledZoneOutputs zone(zoneName, thermostatID, setPoint, isCool);
+                    zoneOutputs zone(dataItem["zoneName"].as<String>(), 
+                        dataItem["thermostatID"].as<int>(), 
+                        dataItem["setPoint"].as<double>(), 
+                        dataItem["isCool"].as<bool>(),
+                        false
+                    );
                     zoneOutputsList.push_back(zone);
                 }
 
                 Serial.println("Zone Outputs List:");
                 for (auto &zone : zoneOutputsList) {
                     zone.show();
+                    zone.checkThermostatID(7, 12);
                 }
             } else if(component["settingType"] == "Thermostat"){
-                // ...handle Thermostat...
+                // Thermostat will be handled elsewhere
             }
         }
     } else if (controller == "ZonePumpController"){
-        // ...handle ZonePumpController...
+        // handle ZonePumpController
     } else if (controller == "FanCoilController"){
-        // ...handle FanCoilController...
+        // handle FanCoilController
     } else {
         Serial.println("Could not determine controller type");
     }

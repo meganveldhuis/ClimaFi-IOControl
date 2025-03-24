@@ -1,12 +1,19 @@
 #include <Arduino.h>
 
-#include "tasks/tasks.h"
+#include "IOControl/IOControl.h"
 
 void setup(){
 
   Serial.begin(115200);
 
-  setup_tasks();
+  controlSetup();
+
+//     delay(10);
+//     for (;;)
+//     {
+//         controlLoop();
+//         delay(10);
+//     }
 
   Serial.println("Setup complete");
 }

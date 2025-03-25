@@ -9,12 +9,8 @@
 
 void controlSetup();
 void controlLoop();
-void readData(fs::FS &fs, const char * path);
-void createControllerClasses();
+JsonDocument readData(fs::FS &fs, const char * path);
+void createControllerClasses(JsonDocument doc);
 void formatLittleFS();
-
-// #defineJsonDocument doc;
-
-
 
 #endif

@@ -1,19 +1,18 @@
 #include "IOControl.h"
 
-JsonDocument doc; // TODO: move this to .h file
-
 void formatLittleFS() {
   Serial.println("Formatting LittleFS...");
   LittleFS.format();
   Serial.println("LittleFS formatted.");
 }
 
-void readData(fs::FS &fs, const char * path){
+JsonDocument readData(fs::FS &fs, const char * path){
+    JsonDocument doc;
     // Open file for reading
     File file = fs.open(path, "r");
     if (!file) {
         Serial.println("Failed to open file for reading");
-        return;
+        return doc;
     }
 
     // Deserialize the JSON document
@@ -26,7 +25,7 @@ void readData(fs::FS &fs, const char * path){
     if (error) {
         Serial.println("deserializeJson() failed: ");
         Serial.println(error.f_str());
-        return;
+        return doc;
     }
 
     serializeJsonPretty(doc, Serial);
@@ -35,14 +34,14 @@ void readData(fs::FS &fs, const char * path){
     JsonObject controllerTypes = doc["controllerTypes"];
     JsonArray components = doc["components"];
 
-    return;
+    return doc;
 }
 
 void controlLoop(){
     return;
 }
 
-void createControllerClasses(){
+void createControllerClasses(JsonDocument doc){
     String controller;
     std::vector<zoneOutputs> zoneOutputsList;
 
@@ -60,12 +59,13 @@ void createControllerClasses(){
             
             if(component["settingType"] == "controlledZoneOutputs"){
                 for (JsonObject dataItem : data) {
-                    Serial.println("creating class instance");
-                    zoneOutputs zone(dataItem["zoneName"].as<String>(), 
+                    zoneOutputs zone(
+                        dataItem["zoneID"].as<int>(),
+                        dataItem["zoneName"].as<String>(), 
                         dataItem["thermostatID"].as<int>(), 
                         dataItem["setPoint"].as<double>(), 
                         dataItem["isCool"].as<bool>(),
-                        false
+                        false //is Pump = false
                     );
                     zoneOutputsList.push_back(zone);
                 }
@@ -90,6 +90,7 @@ void createControllerClasses(){
 
 void controlSetup(){
     Serial.begin(115200);
+    JsonDocument doc;
     if (!LittleFS.begin()) {
         Serial.println("An Error has occurred while mounting LittleFS. Formatting and trying again");
         formatLittleFS();
@@ -98,6 +99,6 @@ void controlSetup(){
             return;
         }
     }
-    readData(LittleFS, "/settings.json");
-    createControllerClasses();
+    doc = readData(LittleFS, "/settings.json");
+    createControllerClasses(doc);
 }

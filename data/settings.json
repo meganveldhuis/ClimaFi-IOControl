@@ -15,24 +15,28 @@
       "settingType": "controlledZoneOutputs",
       "data": [
         {
+          "zoneID": 0,
           "zoneName": "livingRoomZoneName",
           "thermostatID": 1,
           "setPoint": 23,
           "isCool": true
         },
         {
+          "zoneID": 1,
           "zoneName": "bedroomZoneName",
           "thermostatID": 2,
           "setPoint": 23,
           "isCool": false
         },
         {
+          "zoneID": 2,
           "zoneName": "basementZoneName",
           "thermostatID": 7,
           "setPoint": 23,
           "isCool": true
         },
         {
+          "zoneID": 3,
           "zoneName": "topFloorZoneName",
           "thermostatID": 4,
           "setPoint": 23,
@@ -44,18 +48,22 @@
       "settingType": "Thermostat",
       "data": [
         {
+          "id": 0,
           "name": "topFloorThermostat",
           "type": 1
         },
         {
+          "id": 1,
           "name": "thermostatName",
           "type": 2
         },
         {
+          "id": 2,
           "name": "thermostatName",
           "type": 0
         },
         {
+          "id": 3,
           "name": "thermostatName",
           "type": 1
         }

@@ -6,15 +6,17 @@
 
 class zoneOutputs{
     public:
+        int zoneID;
         String zoneName;
         int thermostatID;
         double setPoint;
         bool isCool;
         bool isPump;
+        int pin;
 
-        zoneOutputs(String zoneName, int thermostatID, double setPoint, bool isCool, bool isPump);
+        zoneOutputs(int id, String zoneName, int thermostatID, double setPoint, bool isCool, bool isPump);
         void show();
-        void checkThermostatID(int ID, double currentTemp);
+        void checkThermostatID(int thermostatID, double currentTemp);
         void openValve();
         void closeValve();
 };

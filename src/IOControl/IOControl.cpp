@@ -1,4 +1,5 @@
 #include "IOControl.h"
+std::vector<zoneOutput> zoneOutputsList;
 
 void formatLittleFS() {
   Serial.println("Formatting LittleFS...");
@@ -43,7 +44,6 @@ void controlLoop(){
 
 void createControllerClasses(JsonDocument doc){
     String controller;
-    std::vector<zoneOutputs> zoneOutputsList;
 
     JsonObject controllerTypes = doc["controllerTypes"];
     JsonArray components = doc["components"];
@@ -57,23 +57,21 @@ void createControllerClasses(JsonDocument doc){
         for (JsonObject component : components){
             JsonArray data = component["data"];
             
-            if(component["settingType"] == "controlledZoneOutputs"){
+            if(component["settingType"] == "controlledzoneOutput"){
                 for (JsonObject dataItem : data) {
-                    zoneOutputs zone(
+                    zoneOutput zone(
                         dataItem["zoneID"].as<int>(),
                         dataItem["zoneName"].as<String>(), 
                         dataItem["thermostatID"].as<int>(), 
                         dataItem["setPoint"].as<double>(), 
                         dataItem["isCool"].as<bool>(),
-                        false //is Pump = false
+                        false //set isPump = false
                     );
                     zoneOutputsList.push_back(zone);
                 }
-
                 Serial.println("Zone Outputs List:");
                 for (auto &zone : zoneOutputsList) {
                     zone.show();
-                    zone.checkThermostatID(7, 12);
                 }
             } else if(component["settingType"] == "Thermostat"){
                 // Thermostat will be handled elsewhere
@@ -101,4 +99,12 @@ void controlSetup(){
     }
     doc = readData(LittleFS, "/settings.json");
     createControllerClasses(doc);
+}
+
+bool tempUpdated(int thermostatID, double currentTemp){
+    for (auto &zone : zoneOutputsList) {
+        zone.checkTemp(thermostatID, currentTemp);
+    }
+    return false;
+
 }

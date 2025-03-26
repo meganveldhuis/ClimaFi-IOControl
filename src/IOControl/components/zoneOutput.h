@@ -12,6 +12,11 @@
 #define ZN3_OUT_PIN 33;
 #define ZN4_OUT_PIN 32;
 
+// #define ZCR_OUT_PIN 34;
+#define ZN1_IN_PIN 33;
+#define ZN2_IN_PIN 32;
+#define ZN3_IN_PIN 31;
+
 class zoneOutput{
     public:
         int zoneID;
@@ -22,10 +27,10 @@ class zoneOutput{
         bool isPump;
         
         zoneOutput(int id, String zoneName, int thermostatID, double setPoint, bool isCool, bool isPump);
-        void show();
-        void checkTemp(int thermostatID, double currentTemp);
-        void open();
-        void close();
+        void printData();
+        bool checkTemp(int thermostatID, double currentTemp);
+        bool open();
+        bool close();
         void updateSetPoint(double newSetPoint, JsonDocument doc);
     private:
         int _pin;

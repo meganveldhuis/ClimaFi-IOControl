@@ -8,15 +8,15 @@ zoneOutput::zoneOutput(int zoneID, String zoneName, int thermostatID, double set
     this->isCool = isCool;
     this->isPump = isPump;
     if(isPump){
-        switch(zoneID){ // CHANGE ACCORDING TO PUMP CONTROLLER HARDWARE
+        switch(zoneID){
             case 1:
-                this->_pin = 34;
+                this->_pin = ZN1_IN_PIN;
                 break;
             case 2:
-                this->_pin = 33;
+                this->_pin = ZN2_IN_PIN;
                 break;
             case 3:
-                this->_pin = 32;
+                this->_pin = ZN3_IN_PIN;
                 break;
             default:
                 this->_pin = 0;
@@ -49,7 +49,7 @@ zoneOutput::zoneOutput(int zoneID, String zoneName, int thermostatID, double set
 }
 
 
-void zoneOutput::show(){
+void zoneOutput::printData(){
     Serial.print("Zone ID: ");
     Serial.println(zoneID);
     Serial.print("Zone Name:");
@@ -66,50 +66,54 @@ void zoneOutput::show(){
     Serial.println(_pin);
 }
 
-void zoneOutput::checkTemp(int thermostatID, double currentTemp){
+bool zoneOutput::checkTemp(int thermostatID, double currentTemp){
+    bool isChanged = false;
     if(this->thermostatID != thermostatID){
-        return;
+        return isChanged;
     }
     if(_pin == 0){
         Serial.println("No pin found. Aborting.");
-        return;
+        return isChanged;
     }
-    if(setPoint > currentTemp){ // too cold
-        Serial.println("Too cold");
+    if(setPoint > currentTemp){ // Too Cold
         if(isCool){
-            close();
+            isChanged = close();
         }else{
-            open();
+            isChanged = open();
         }
-    }else{ // too hot
-        Serial.println("Too hot");
+    }else{ // Too Hot
         if(isCool){
-            open();
+            isChanged = open();
         }else{
-            close();
+            isChanged = close();
         }
     }
+    return isChanged;
     
 }
 
-void zoneOutput::open(){
+bool zoneOutput::open(){
     if(!_isOpen){
         Serial.printf("Opening pin: %d, which is in %s\n", _pin, zoneName.c_str());
         // digitalWrite(_pin, HIGH);
         this->_isOpen = true;
+        return _isOpen; //true
     }
+    return _isOpen; //false (did not change)
 }
 
-void zoneOutput::close(){
+bool zoneOutput::close(){
     if(_isOpen){
         Serial.printf("Closing pin: %d, which is in %s\n", _pin, zoneName.c_str());
         // digitalWrite(_pin, LOW);
         _isOpen = false;
-        delay(10);
+        return !_isOpen; //true
     }
+    return false; //false (did not change)
 }
 
 void zoneOutput::updateSetPoint(double newSetPoint, JsonDocument doc){
+    // WIP : doesn't quite work...
     // update settings.json - but this will have to rewrite the entire file
     JsonArray components = doc["components"];
     for (JsonObject component : components){
@@ -121,7 +125,7 @@ void zoneOutput::updateSetPoint(double newSetPoint, JsonDocument doc){
         }
     }
 
-    //TODO: check this works    
+    // TODO: check this works
     File backupFile = LittleFS.open("/settings.json", "r");
     if (!backupFile) {
         Serial.println("Failed to open file for reading");
@@ -139,5 +143,6 @@ void zoneOutput::updateSetPoint(double newSetPoint, JsonDocument doc){
         return;
     }
     file.close();
+    backupFile.close();
     this->setPoint = newSetPoint;
 }

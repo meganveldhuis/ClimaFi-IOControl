@@ -33,10 +33,23 @@ JsonDocument readData(fs::FS &fs, const char * path){
 }
 
 void controlLoop(){
-    // Serial.println("Control loop");
-    // tempUpdated(4, 25); //should show that the topFloor's valve is closed
+    // tempUpdated(4, 25); //should printData that the topFloor's valve is closed
     // tempUpdated(4, 15); // should be on / cooling
     return;
+}
+
+void createZoneOutputsList(JsonArray data, bool isPump){
+    for (JsonObject dataItem : data) {
+        zoneOutput zone(
+            dataItem["zoneID"].as<int>(),
+            dataItem["zoneName"].as<String>(), 
+            dataItem["thermostatID"].as<int>(), 
+            dataItem["setPoint"].as<double>(), 
+            dataItem["isCool"].as<bool>(),
+            false //set isPump = false
+        );
+        zoneOutputsList.push_back(zone);
+    }
 }
 
 void createControllerClasses(JsonDocument doc){
@@ -53,38 +66,27 @@ void createControllerClasses(JsonDocument doc){
     if(controller == "ZoneValveController"){
         for (JsonObject component : components){
             JsonArray data = component["data"];
-            
             if(component["settingType"] == "controlledZoneOutputs"){
-                for (JsonObject dataItem : data) {
-                    zoneOutput zone(
-                        dataItem["zoneID"].as<int>(),
-                        dataItem["zoneName"].as<String>(), 
-                        dataItem["thermostatID"].as<int>(), 
-                        dataItem["setPoint"].as<double>(), 
-                        dataItem["isCool"].as<bool>(),
-                        false //set isPump = false
-                    );
-                    zoneOutputsList.push_back(zone);
-                }
-                // Serial.println("Zone Outputs List:");
-                // for (zoneOutput& zone : zoneOutputsList) { // Pass by reference
-                //     zone.show();
-                // }
-            } else if(component["settingType"] == "Thermostat"){
-                // Thermostat will be handled elsewhere
+                createZoneOutputsList(data, false);
             }
         }
     } else if (controller == "ZonePumpController"){
-        // handle ZonePumpController
+        for (JsonObject component : components){
+            JsonArray data = component["data"];
+            if(component["settingType"] == "controlledZoneOutputs"){
+                createZoneOutputsList(data, true);
+            }
+        }
     } else if (controller == "FanCoilController"){
         // handle FanCoilController
     } else {
         Serial.println("Could not determine controller type");
     }
-    tempUpdated(4, 25);
-    delay(100);
-    tempUpdated(4, 15);
 }
+
+
+
+// ------ Library functions to use in other files ------ //
 
 void controlSetup(){
     Serial.begin(115200);
@@ -102,9 +104,9 @@ void controlSetup(){
 }
 
 bool tempUpdated(int thermostatID, double currentTemp){
+    bool isChanged = false;
     for (zoneOutput& zone : zoneOutputsList) { // Pass by reference
-        zone.checkTemp(thermostatID, currentTemp);
+        isChanged = isChanged || zone.checkTemp(thermostatID, currentTemp);
     }
-    return false;
-
+    return isChanged;
 }

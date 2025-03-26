@@ -21,6 +21,7 @@ void setup(){
 void loop()
 {
     //nc_loop();
+    controlLoop();
 
     delay(5);
 }

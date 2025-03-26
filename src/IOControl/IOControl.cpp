@@ -9,7 +9,6 @@ void formatLittleFS() {
 
 JsonDocument readData(fs::FS &fs, const char * path){
     JsonDocument doc;
-    // Open file for reading
     File file = fs.open(path, "r");
     if (!file) {
         Serial.println("Failed to open file for reading");
@@ -30,15 +29,13 @@ JsonDocument readData(fs::FS &fs, const char * path){
     }
 
     serializeJsonPretty(doc, Serial);
-
-    int controller = doc["controller"];
-    JsonObject controllerTypes = doc["controllerTypes"];
-    JsonArray components = doc["components"];
-
     return doc;
 }
 
 void controlLoop(){
+    // Serial.println("Control loop");
+    // tempUpdated(4, 25); //should show that the topFloor's valve is closed
+    // tempUpdated(4, 15); // should be on / cooling
     return;
 }
 
@@ -57,7 +54,7 @@ void createControllerClasses(JsonDocument doc){
         for (JsonObject component : components){
             JsonArray data = component["data"];
             
-            if(component["settingType"] == "controlledzoneOutput"){
+            if(component["settingType"] == "controlledZoneOutputs"){
                 for (JsonObject dataItem : data) {
                     zoneOutput zone(
                         dataItem["zoneID"].as<int>(),
@@ -69,10 +66,10 @@ void createControllerClasses(JsonDocument doc){
                     );
                     zoneOutputsList.push_back(zone);
                 }
-                Serial.println("Zone Outputs List:");
-                for (auto &zone : zoneOutputsList) {
-                    zone.show();
-                }
+                // Serial.println("Zone Outputs List:");
+                // for (zoneOutput& zone : zoneOutputsList) { // Pass by reference
+                //     zone.show();
+                // }
             } else if(component["settingType"] == "Thermostat"){
                 // Thermostat will be handled elsewhere
             }
@@ -84,6 +81,9 @@ void createControllerClasses(JsonDocument doc){
     } else {
         Serial.println("Could not determine controller type");
     }
+    tempUpdated(4, 25);
+    delay(100);
+    tempUpdated(4, 15);
 }
 
 void controlSetup(){
@@ -102,7 +102,7 @@ void controlSetup(){
 }
 
 bool tempUpdated(int thermostatID, double currentTemp){
-    for (auto &zone : zoneOutputsList) {
+    for (zoneOutput& zone : zoneOutputsList) { // Pass by reference
         zone.checkTemp(thermostatID, currentTemp);
     }
     return false;

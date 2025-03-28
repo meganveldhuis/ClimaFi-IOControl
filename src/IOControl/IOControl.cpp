@@ -51,10 +51,6 @@ void initZoneOutputs(JsonArray data, bool isPump){
 }
 
 void initEndSwitch(JsonArray data){
-    Serial.println("read data:");
-    Serial.println(data[0]["isNearZone"].as<bool>());
-    Serial.println("read data:");
-    Serial.println(data[0]["nearID"].as<int>());
     globalEndSwitch = endSwitch (
         data[0]["isNearZone"].as<bool>(), 
         data[0]["isNearThermostat"].as<bool>(), 

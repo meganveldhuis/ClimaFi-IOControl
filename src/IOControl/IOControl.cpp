@@ -28,13 +28,11 @@ JsonDocument readData(fs::FS &fs, const char * path){
         return doc;
     }
 
-    serializeJsonPretty(doc, Serial);
+    // serializeJsonPretty(doc, Serial);
     return doc;
 }
 
 void controlLoop(){
-    // tempUpdated(4, 25); //should printData that the topFloor's valve is closed
-    // tempUpdated(4, 15); // should be on / cooling
     return;
 }
 
@@ -109,4 +107,39 @@ bool tempUpdated(int thermostatID, double currentTemp){
         isChanged = isChanged || zone.checkTemp(thermostatID, currentTemp);
     }
     return isChanged;
+}
+
+bool updateSetPoint(double newSetPoint, int zoneID){
+    // update settings.json - but this will have to rewrite the entire file
+    JsonDocument backupDocument = readData(LittleFS, "/settings.json");
+    JsonDocument changedDocument = readData(LittleFS, "/settings.json");
+
+    JsonArray components = changedDocument["components"];
+    for (JsonObject component : components){
+        JsonArray data = component["data"];
+        for (JsonObject dataItem : data) {
+            if(dataItem["zoneID"] == zoneID){
+                dataItem["setPoint"] = newSetPoint;
+            }
+        }
+    }
+    serializeJsonPretty(changedDocument, Serial);
+    
+    LittleFS.remove("/settings.json"); // Delete existing file, otherwise the configuration is appended to the file
+    File file = LittleFS.open("/settings.json", "w");
+    if (!file) {
+        Serial.println("Failed to open file for writing");
+        return false;
+    }
+    if (serializeJson(changedDocument, file) == 0) {
+        Serial.println(F("Failed to write to file. Reset to old settings"));
+        if (serializeJson(backupDocument, file) == 0) {
+            Serial.println(F("Failed to write to backup file. Uh oh"));
+            return false;
+        }
+        return false;
+    }
+    file.close();
+    Serial.printf("Successfully changed setPoint to %.3f in Zone %u\n", newSetPoint, zoneID);
+    return true;
 }

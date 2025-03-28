@@ -31,7 +31,7 @@ class zoneOutput{
         bool checkTemp(int thermostatID, double currentTemp);
         bool open();
         bool close();
-        void updateSetPoint(double newSetPoint, JsonDocument doc);
+        
     private:
         int _pin;
         bool _isOpen;

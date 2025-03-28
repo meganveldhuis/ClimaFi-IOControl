@@ -7,13 +7,7 @@ void setup(){
   Serial.begin(115200);
 
   controlSetup();
-
-//     delay(10);
-//     for (;;)
-//     {
-//         controlLoop();
-//         delay(10);
-//     }
+  updateSetPoint(9.75, 2);
 
   Serial.println("Setup complete");
 }

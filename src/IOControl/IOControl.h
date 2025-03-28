@@ -16,5 +16,6 @@ void createZoneOutputsList(JsonArray data, bool isPump);
 void createControllerClasses(JsonDocument doc);
 void formatLittleFS();
 bool tempUpdated(int thermostatID, double currentTemp);
+bool updateSetPoint(double newSetPoint, int zoneID);
 
 #endif

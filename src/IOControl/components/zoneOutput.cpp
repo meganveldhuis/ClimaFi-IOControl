@@ -111,38 +111,3 @@ bool zoneOutput::close(){
     }
     return false; //false (did not change)
 }
-
-void zoneOutput::updateSetPoint(double newSetPoint, JsonDocument doc){
-    // WIP : doesn't quite work...
-    // update settings.json - but this will have to rewrite the entire file
-    JsonArray components = doc["components"];
-    for (JsonObject component : components){
-        JsonArray data = component["data"];
-        for (JsonObject dataItem : data) {
-            if(dataItem["zoneID"] == zoneID){
-                dataItem["setPoint"] = newSetPoint;
-            }
-        }
-    }
-
-    // TODO: check this works
-    File backupFile = LittleFS.open("/settings.json", "r");
-    if (!backupFile) {
-        Serial.println("Failed to open file for reading");
-        return;
-    }
-    LittleFS.remove("/settings.json"); // Delete existing file, otherwise the configuration is appended to the file
-    File file = LittleFS.open("/settings.json", "w");
-    if (!file) {
-        Serial.println("Failed to open file for writing. ");
-        return;
-    }
-    if (serializeJson(doc, file) == 0) {
-        Serial.println(F("Failed to write to file. Reset to old settings"));
-        file.print(backupFile);
-        return;
-    }
-    file.close();
-    backupFile.close();
-    this->setPoint = newSetPoint;
-}

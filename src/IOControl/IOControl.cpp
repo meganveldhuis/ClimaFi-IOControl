@@ -1,5 +1,6 @@
 #include "IOControl.h"
 std::vector<zoneOutput> zoneOutputsList;
+endSwitch globalEndSwitch(false, false, -1); // Define and initialize global endSwitch
 
 void formatLittleFS() {
   Serial.println("Formatting LittleFS...");
@@ -28,7 +29,6 @@ JsonDocument readData(fs::FS &fs, const char * path){
         return doc;
     }
 
-    // serializeJsonPretty(doc, Serial);
     return doc;
 }
 
@@ -36,7 +36,7 @@ void controlLoop(){
     return;
 }
 
-void createZoneOutputsList(JsonArray data, bool isPump){
+void initZoneOutputs(JsonArray data, bool isPump){
     for (JsonObject dataItem : data) {
         zoneOutput zone(
             dataItem["zoneID"].as<int>(),
@@ -44,10 +44,22 @@ void createZoneOutputsList(JsonArray data, bool isPump){
             dataItem["thermostatID"].as<int>(), 
             dataItem["setPoint"].as<double>(), 
             dataItem["isCool"].as<bool>(),
-            false //set isPump = false
+            false
         );
         zoneOutputsList.push_back(zone);
     }
+}
+
+void initEndSwitch(JsonArray data){
+    Serial.println("read data:");
+    Serial.println(data[0]["isNearZone"].as<bool>());
+    Serial.println("read data:");
+    Serial.println(data[0]["nearID"].as<int>());
+    globalEndSwitch = endSwitch (
+        data[0]["isNearZone"].as<bool>(), 
+        data[0]["isNearThermostat"].as<bool>(), 
+        data[0]["nearID"].as<int>()
+    );
 }
 
 void createControllerClasses(JsonDocument doc){
@@ -65,14 +77,18 @@ void createControllerClasses(JsonDocument doc){
         for (JsonObject component : components){
             JsonArray data = component["data"];
             if(component["settingType"] == "controlledZoneOutputs"){
-                createZoneOutputsList(data, false);
+                initZoneOutputs(data, false);
             }
         }
     } else if (controller == "ZonePumpController"){
+        Serial.println("pump found");
         for (JsonObject component : components){
             JsonArray data = component["data"];
             if(component["settingType"] == "controlledZoneOutputs"){
-                createZoneOutputsList(data, true);
+                initZoneOutputs(data, true);
+            }
+            if(component["settingType"] == "endSwitch"){
+                initEndSwitch(data);
             }
         }
     } else if (controller == "FanCoilController"){
@@ -84,7 +100,7 @@ void createControllerClasses(JsonDocument doc){
 
 
 
-// ------ Library functions to use in other files ------ //
+// ------------------ Library functions to use in other files ------------------ //
 
 void controlSetup(){
     Serial.begin(115200);
@@ -103,13 +119,22 @@ void controlSetup(){
 
 bool tempUpdated(int thermostatID, double currentTemp){
     bool isChanged = false;
-    for (zoneOutput& zone : zoneOutputsList) { // Pass by reference
+    for (zoneOutput& zone : zoneOutputsList) {
         isChanged = isChanged || zone.checkTemp(thermostatID, currentTemp);
+        if(isChanged && globalEndSwitch.isNearZone && globalEndSwitch.nearID == zone.zoneID){
+            if(zone.isOpen){
+                globalEndSwitch.open();
+            }else{
+                globalEndSwitch.close();
+            }
+        }
     }
     return isChanged;
 }
 
 bool updateSetPoint(double newSetPoint, int zoneID){
+    // ! this assumes you put in a zoneID that exists
+
     // update settings.json - but this will have to rewrite the entire file
     JsonDocument backupDocument = readData(LittleFS, "/settings.json");
     JsonDocument changedDocument = readData(LittleFS, "/settings.json");

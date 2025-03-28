@@ -5,9 +5,11 @@
 void setup(){
 
   Serial.begin(115200);
-
+  Serial.println("before setup");
   controlSetup();
-  updateSetPoint(9.75, 2);
+  tempUpdated(7, 29);
+  // updateSetPoint(9.75, 2);
+  Serial.println(ESP.getFreeHeap());
 
   Serial.println("Setup complete");
 }

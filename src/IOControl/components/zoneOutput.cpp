@@ -44,7 +44,7 @@ zoneOutput::zoneOutput(int zoneID, String zoneName, int thermostatID, double set
     pinMode(_pin, OUTPUT);
     digitalWrite(_pin, LOW);
 
-    _isOpen = false;
+    isOpen = false;
     
 }
 
@@ -67,47 +67,46 @@ void zoneOutput::printData(){
 }
 
 bool zoneOutput::checkTemp(int thermostatID, double currentTemp){
-    bool isChanged = false;
     if(this->thermostatID != thermostatID){
-        return isChanged;
+        return false;
     }
     if(_pin == 0){
         Serial.println("No pin found. Aborting.");
-        return isChanged;
+        return false;
     }
     if(setPoint > currentTemp){ // Too Cold
         if(isCool){
-            isChanged = close();
+            close();
         }else{
-            isChanged = open();
+            open();
         }
     }else{ // Too Hot
         if(isCool){
-            isChanged = open();
+            open();
         }else{
-            isChanged = close();
+            close();
         }
     }
-    return isChanged;
+    return true;
     
 }
 
-bool zoneOutput::open(){
-    if(!_isOpen){
+void zoneOutput::open(){
+    if(!isOpen){
         Serial.printf("Opening pin: %d, which is in %s\n", _pin, zoneName.c_str());
         // digitalWrite(_pin, HIGH);
-        this->_isOpen = true;
-        return _isOpen; //true
+        this->isOpen = true;
+        return;
     }
-    return _isOpen; //false (did not change)
+    return;
 }
 
-bool zoneOutput::close(){
-    if(_isOpen){
+void zoneOutput::close(){
+    if(isOpen){
         Serial.printf("Closing pin: %d, which is in %s\n", _pin, zoneName.c_str());
         // digitalWrite(_pin, LOW);
-        _isOpen = false;
-        return !_isOpen; //true
+        isOpen = false;
+        return
     }
-    return false; //false (did not change)
+    return;
 }

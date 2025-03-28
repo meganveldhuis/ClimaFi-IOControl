@@ -1,5 +1,5 @@
 {
-  "controller": 0,
+  "controller": 1,
   "controllerTypes": {
     "ZoneValveController": 0,
     "ZonePumpController": 1,
@@ -45,7 +45,17 @@
       ]
     },
     {
-      "settingType": "Thermostat",
+      "settingType": "endSwitch",
+      "data": [
+        {
+          "isNearZone": true,
+          "isNearThermostat": false,
+          "nearID": 3
+        }
+      ]
+    },
+    {
+      "settingType": "thermostat",
       "data": [
         {
           "id": 0,
@@ -66,27 +76,6 @@
           "id": 3,
           "name": "thermostatName",
           "type": 1
-        }
-      ]
-    },
-    {
-      "settingType": "thermistorPort",
-      "data": [
-        {
-          "name": "thermistorName"
-        },
-        {
-          "name": "secondThermistorName"
-        }
-      ]
-    },
-    {
-      "settingType": "ADCOutput",
-      "data": [
-        {
-          "name": "fanCoilName",
-          "thermostatID": 1,
-          "setPoint": 24
         }
       ]
     }

@@ -106,7 +106,7 @@ void zoneOutput::close(){
         Serial.printf("Closing pin: %d, which is in %s\n", _pin, zoneName.c_str());
         // digitalWrite(_pin, LOW);
         isOpen = false;
-        return
+        return;
     }
     return;
 }

@@ -2,8 +2,7 @@
 #define ENDSWITCH_H
 
 #include <Arduino.h>
-
-#define ZCR_OUT_PIN 25;
+#include "pin_defines.h"
 
 class endSwitch{
     public:

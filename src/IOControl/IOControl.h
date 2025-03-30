@@ -7,9 +7,13 @@
 
 #include "components/zoneOutput.h"
 #include "components/endSwitch.h"
+#include "components/ADCOutput.h"
+#include "components/thermistorPort.h"
 
 extern std::vector<zoneOutput> zoneOutputsList;
+extern std::vector<thermistorPort> thermistorPortsList;
 extern endSwitch globalEndSwitch;
+extern ADCOutput globalADCOutput;
 
 void controlSetup();
 JsonDocument readData(fs::FS &fs, const char * path);
@@ -22,5 +26,6 @@ void initEndSwitch(JsonArray data);
 
 void updateControls();
 bool isZoneOpen(int zoneID);
+bool isADCOn();
 
 #endif

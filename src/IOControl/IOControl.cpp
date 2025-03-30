@@ -1,6 +1,9 @@
 #include "IOControl.h"
+// Define and initialize global components
 std::vector<zoneOutput> zoneOutputsList;
-endSwitch globalEndSwitch(false, false, -1); // Define and initialize global endSwitch
+std::vector<thermistorPort> thermistorPortsList;
+ADCOutput globalADCOutput("", -1,-1);
+endSwitch globalEndSwitch(false, false, -1);
 
 void formatLittleFS() {
   Serial.println("Formatting LittleFS...");
@@ -15,20 +18,14 @@ JsonDocument readData(fs::FS &fs, const char * path){
         Serial.println("Failed to open file for reading");
         return doc;
     }
-
-    // Deserialize the JSON document
     DeserializationError error = deserializeJson(doc, file);
-    
-    // Close the file
     file.close();
-
-    // Test if parsing succeeds
-    if (error) {
+    
+    if (error) { // Test if parsing succeeds
         Serial.println("deserializeJson() failed: ");
         Serial.println(error.f_str());
         return doc;
     }
-
     return doc;
 }
 
@@ -84,7 +81,27 @@ void createControllerClasses(JsonDocument doc){
             }
         }
     } else if (controller == "FanCoilController"){
-        // handle FanCoilController
+        for (JsonObject component : components){
+            JsonArray data = component["data"];
+            if(component["settingType"] == "thermistorPort"){
+                int number = 1;
+                for (JsonObject dataItem : data) {
+                    thermistorPort thermistor(
+                        dataItem["name"].as<String>(),
+                        number
+                    );
+                    number++;
+                    thermistorPortsList.push_back(thermistor);
+                }
+            }
+            if(component["settingType"] == "ADCOutput"){
+                globalADCOutput = ADCOutput(
+                    data[0]["name"].as<String>(),
+                    data[0]["thermostatID"].as<int>(),
+                    data[0]["setPoint"].as<double>()
+                );
+            }
+        }
     } else {
         Serial.println("Could not determine controller type");
     }
@@ -174,4 +191,9 @@ bool isZoneOpen(int zoneID){
     }
     Serial.printf("No zone with id %d found\n", zoneID);
     return false;
+}
+
+
+bool isADCOn(){
+    return globalADCOutput.isOn;
 }

@@ -2,18 +2,22 @@
 #include "IOControl/IOControl.h"
 
 void setup(){
-
   Serial.begin(115200);
+
   controlSetup();
   tempUpdated(7, 29);
-  updateSetPoint(9.75, 2);
-  // Serial.println(ESP.getFreeHeap());
+
+  delay(4000);
+  Serial.println("Updating set point");
+  updateSetPoint(80, 2);
+  
+  delay(4000);
+  Serial.println("with new file:");
+  updateControls();
 
   Serial.println("Setup complete");
 }
 
 void loop(){
-  controlLoop();
-
   delay(5);
 }

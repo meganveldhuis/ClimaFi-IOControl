@@ -10,12 +10,11 @@ endSwitch::endSwitch(bool isNearZone, bool isNearThermostat, int nearID){
     digitalWrite(_pin, LOW);
 
     _isOpen = false;
-    Serial.println(nearID);
 }
 
 void endSwitch::open(){
     if(!_isOpen){
-        Serial.printf("Opening end switch");
+        Serial.printf("Opening end switch\n");
         // digitalWrite(_pin, LOW);
         _isOpen = true;
     }
@@ -24,7 +23,7 @@ void endSwitch::open(){
 
 void endSwitch::close(){
     if(_isOpen){
-        Serial.printf("Closing end switch");
+        Serial.printf("Closing end switch\n");
         // digitalWrite(_pin, LOW);
         _isOpen = false;
     }

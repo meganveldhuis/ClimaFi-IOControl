@@ -32,9 +32,6 @@ JsonDocument readData(fs::FS &fs, const char * path){
     return doc;
 }
 
-void controlLoop(){
-    return;
-}
 
 void initZoneOutputs(JsonArray data, bool isPump){
     for (JsonObject dataItem : data) {
@@ -77,7 +74,6 @@ void createControllerClasses(JsonDocument doc){
             }
         }
     } else if (controller == "ZonePumpController"){
-        Serial.println("pump found");
         for (JsonObject component : components){
             JsonArray data = component["data"];
             if(component["settingType"] == "controlledZoneOutputs"){
@@ -99,7 +95,6 @@ void createControllerClasses(JsonDocument doc){
 // ------------------ Library functions to use in other files ------------------ //
 
 void controlSetup(){
-    Serial.begin(115200);
     JsonDocument doc;
     if (!LittleFS.begin()) {
         Serial.println("An Error has occurred while mounting LittleFS. Formatting and trying again");
@@ -129,7 +124,7 @@ bool tempUpdated(int thermostatID, double currentTemp){
 }
 
 bool updateSetPoint(double newSetPoint, int zoneID){
-    // ! this assumes you put in a zoneID that exists
+    // ! this assumes you inputted a zoneID that exists
 
     // update settings.json - but this will have to rewrite the entire file
     JsonDocument backupDocument = readData(LittleFS, "/settings.json");
@@ -144,7 +139,6 @@ bool updateSetPoint(double newSetPoint, int zoneID){
             }
         }
     }
-    serializeJsonPretty(changedDocument, Serial);
     
     LittleFS.remove("/settings.json"); // Delete existing file, otherwise the configuration is appended to the file
     File file = LittleFS.open("/settings.json", "w");
@@ -163,4 +157,21 @@ bool updateSetPoint(double newSetPoint, int zoneID){
     file.close();
     Serial.printf("Successfully changed setPoint to %.3f in Zone %u\n", newSetPoint, zoneID);
     return true;
+}
+
+void updateControls(){
+    std::vector<zoneOutput> zoneOutputsList;
+    endSwitch globalEndSwitch(false, false, -1);
+    controlSetup();
+    return;
+}
+
+bool isZoneOpen(int zoneID){
+    for (zoneOutput& zone : zoneOutputsList) {
+        if(zone.zoneID == zoneID){
+            return zone.isOpen;
+        }
+    }
+    Serial.printf("No zone with id %d found\n", zoneID);
+    return false;
 }

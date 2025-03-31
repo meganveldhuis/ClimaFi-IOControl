@@ -41,6 +41,16 @@
       ]
     },
     {
+      "settingType": "endSwitch",
+      "data": [
+        {
+          "isNearZone": true,
+          "isNearThermostat": false,
+          "nearID": 3
+        }
+      ]
+    },
+    {
       "settingType": "Thermostat",
       "data": [
         {

@@ -26,6 +26,7 @@ JsonDocument readData(fs::FS &fs, const char * path){
         Serial.println(error.f_str());
         return doc;
     }
+    serializeJsonPretty(doc, Serial);
     return doc;
 }
 
@@ -137,10 +138,13 @@ bool tempUpdated(int thermostatID, double currentTemp){
             }
         }
     }
+    if(globalADCOutput.name){
+        globalADCOutput.checkTemp(thermostatID, currentTemp);
+    }
     return isChanged;
 }
 
-bool updateSetPoint(double newSetPoint, int zoneID){
+bool updateSetPoint(double newSetPoint, int zoneID, String fanCoilName){
     // ! this assumes you inputted a zoneID that exists
 
     // update settings.json - but this will have to rewrite the entire file
@@ -152,6 +156,8 @@ bool updateSetPoint(double newSetPoint, int zoneID){
         JsonArray data = component["data"];
         for (JsonObject dataItem : data) {
             if(dataItem["zoneID"] == zoneID){
+                dataItem["setPoint"] = newSetPoint;
+            }else if(dataItem["name"] != "" && dataItem["name"] == fanCoilName){
                 dataItem["setPoint"] = newSetPoint;
             }
         }

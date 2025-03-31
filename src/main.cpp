@@ -5,15 +5,19 @@ void setup(){
   Serial.begin(115200);
 
   controlSetup();
-  tempUpdated(7, 29);
+  tempUpdated(1, 10);
 
   delay(4000);
   Serial.println("Updating set point");
-  updateSetPoint(80, 2);
+  updateSetPoint(75, 1, "fanCoilName");
+
+  tempUpdated(1, 29);
   
   delay(4000);
   Serial.println("with new file:");
   updateControls();
+
+  tempUpdated(1, 80);
 
   Serial.println("Setup complete");
 }

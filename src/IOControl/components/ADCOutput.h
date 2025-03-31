@@ -12,6 +12,7 @@ class ADCOutput{
         bool isOn;
     
         ADCOutput(String name, int thermostatID, double setPoint);
+        void checkTemp(int thermostatID, double currentTemp);
         void turnOn();
         void turnOff();
         

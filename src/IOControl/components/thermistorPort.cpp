@@ -14,6 +14,10 @@ thermistorPort::thermistorPort(String name, int number){
 }
 
 float thermistorPort::getTemp(){
+    if(_pin ==0){
+        Serial.println("No pin found. Aborting.");
+        return 0; //error
+    }
     float a = 639.5f, b = -0.1332f, c = -162.5f;
     float Rntc, Vntc, TempC, TempF;
     Vntc = (analogRead(_pin) * 5.0f) / 4096.0f;

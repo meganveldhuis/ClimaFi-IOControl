@@ -48,24 +48,6 @@ zoneOutput::zoneOutput(int zoneID, String zoneName, int thermostatID, float setP
     
 }
 
-
-void zoneOutput::printData(){
-    Serial.print("Zone ID: ");
-    Serial.println(zoneID);
-    Serial.print("Zone Name:");
-    Serial.println(zoneName);
-    Serial.print("Is pump? ");
-    Serial.println(isPump);
-    Serial.print("Thermostat ID: ");
-    Serial.println(thermostatID);
-    Serial.print("Set Point: ");
-    Serial.println(setPoint);
-    Serial.print("Is Cool: ");
-    Serial.println(isCool);
-    Serial.print("pin: ");
-    Serial.println(_pin);
-}
-
 bool zoneOutput::checkTemp(int thermostatID, float currentTemp){
     if(this->thermostatID != thermostatID){
         return false;

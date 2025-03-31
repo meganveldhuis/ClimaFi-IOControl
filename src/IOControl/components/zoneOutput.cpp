@@ -1,6 +1,6 @@
 #include "zoneOutput.h"
 
-zoneOutput::zoneOutput(int zoneID, String zoneName, int thermostatID, double setPoint, bool isCool, bool isPump){
+zoneOutput::zoneOutput(int zoneID, String zoneName, int thermostatID, float setPoint, bool isCool, bool isPump){
     this->zoneID = zoneID;
     this->zoneName = zoneName;
     this->thermostatID = thermostatID;
@@ -66,7 +66,7 @@ void zoneOutput::printData(){
     Serial.println(_pin);
 }
 
-bool zoneOutput::checkTemp(int thermostatID, double currentTemp){
+bool zoneOutput::checkTemp(int thermostatID, float currentTemp){
     if(this->thermostatID != thermostatID){
         return false;
     }

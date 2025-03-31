@@ -11,15 +11,15 @@ class zoneOutput{
         int zoneID;
         String zoneName;
         int thermostatID;
-        double setPoint;
+        float setPoint;
         bool isCool;
         bool isPump;
         bool isOpen;
         
         
-        zoneOutput(int id, String zoneName, int thermostatID, double setPoint, bool isCool, bool isPump);
+        zoneOutput(int id, String zoneName, int thermostatID, float setPoint, bool isCool, bool isPump);
         void printData();
-        bool checkTemp(int thermostatID, double currentTemp);
+        bool checkTemp(int thermostatID, float currentTemp);
         void open();
         void close();
 

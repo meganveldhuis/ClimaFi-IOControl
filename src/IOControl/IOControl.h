@@ -20,12 +20,13 @@ JsonDocument readData(fs::FS &fs, const char * path);
 void initZoneOutputs(JsonArray data, bool isPump);
 void createControllerClasses(JsonDocument doc);
 void formatLittleFS();
-bool tempUpdated(int thermostatID, double currentTemp);
-bool updateSetPoint(double newSetPoint, int zoneID, String fanCoilName);
+bool tempUpdated(int thermostatID, float currentTemp);
+bool updateSetPoint(float newSetPoint, int zoneID, String fanCoilName);
 void initEndSwitch(JsonArray data);
 
 void updateControls();
 bool isZoneOpen(int zoneID);
 bool isADCOn();
+float getThermistorTemp(String thermistorName);
 
 #endif

@@ -19,6 +19,8 @@ void setup(){
 
   tempUpdated(1, 80);
 
+  Serial.println(getThermistorTemp("secondThermistorName"));
+
   Serial.println("Setup complete");
 }
 

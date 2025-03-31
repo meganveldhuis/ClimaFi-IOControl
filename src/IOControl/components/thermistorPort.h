@@ -9,6 +9,7 @@ class thermistorPort{
         String name;
     
         thermistorPort(String name, int number);
+        float getTemp();
 
     private:
         int _pin;

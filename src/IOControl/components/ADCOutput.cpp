@@ -1,6 +1,6 @@
 #include "ADCOutput.h"
 
-ADCOutput::ADCOutput(String name, int thermostatID, double setPoint){
+ADCOutput::ADCOutput(String name, int thermostatID, float setPoint){
     this->name = name;
     this->thermostatID = thermostatID;
     this->setPoint = setPoint;
@@ -10,7 +10,7 @@ ADCOutput::ADCOutput(String name, int thermostatID, double setPoint){
     isOn = false;
 }
 
-void ADCOutput::checkTemp(int thermostatID, double currentTemp){
+void ADCOutput::checkTemp(int thermostatID, float currentTemp){
     if(this->thermostatID != thermostatID){
         return;
     }

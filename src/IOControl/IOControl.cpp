@@ -26,7 +26,7 @@ JsonDocument readData(fs::FS &fs, const char * path){
         Serial.println(error.f_str());
         return doc;
     }
-    serializeJsonPretty(doc, Serial);
+    // serializeJsonPretty(doc, Serial);
     return doc;
 }
 
@@ -37,7 +37,7 @@ void initZoneOutputs(JsonArray data, bool isPump){
             dataItem["zoneID"].as<int>(),
             dataItem["zoneName"].as<String>(), 
             dataItem["thermostatID"].as<int>(), 
-            dataItem["setPoint"].as<double>(), 
+            dataItem["setPoint"].as<float>(), 
             dataItem["isCool"].as<bool>(),
             false
         );
@@ -99,7 +99,7 @@ void createControllerClasses(JsonDocument doc){
                 globalADCOutput = ADCOutput(
                     data[0]["name"].as<String>(),
                     data[0]["thermostatID"].as<int>(),
-                    data[0]["setPoint"].as<double>()
+                    data[0]["setPoint"].as<float>()
                 );
             }
         }
@@ -126,7 +126,7 @@ void controlSetup(){
     createControllerClasses(doc);
 }
 
-bool tempUpdated(int thermostatID, double currentTemp){
+bool tempUpdated(int thermostatID, float currentTemp){
     bool isChanged = false;
     for (zoneOutput& zone : zoneOutputsList) {
         isChanged = isChanged || zone.checkTemp(thermostatID, currentTemp);
@@ -144,7 +144,7 @@ bool tempUpdated(int thermostatID, double currentTemp){
     return isChanged;
 }
 
-bool updateSetPoint(double newSetPoint, int zoneID, String fanCoilName){
+bool updateSetPoint(float newSetPoint, int zoneID, String fanCoilName){
     // ! this assumes you inputted a zoneID that exists
 
     // update settings.json - but this will have to rewrite the entire file
@@ -202,4 +202,12 @@ bool isZoneOpen(int zoneID){
 
 bool isADCOn(){
     return globalADCOutput.isOn;
+}
+
+float getThermistorTemp(String thermistorName){
+    for (thermistorPort& thermistor : thermistorPortsList) {
+        if(thermistor.name == thermistorName){
+            return thermistor.getTemp();
+        }
+    }
 }

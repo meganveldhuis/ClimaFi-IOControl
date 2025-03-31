@@ -24,8 +24,8 @@
 // -- -- -- -- -- -- -- FAN COIL CONTROLLER: -- -- -- -- -- -- -- //
 #define COIL_PWM_PIN 5;
 
-#define THERMISTOR_0_PIN 7;
-#define THERMISTOR_1_PIN 6;
+#define THERMISTOR_0_PIN 6;
+#define THERMISTOR_1_PIN 7;
 
 
 #endif

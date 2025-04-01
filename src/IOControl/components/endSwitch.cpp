@@ -1,10 +1,14 @@
 #include "endSwitch.h"
 
-endSwitch::endSwitch(bool isNearZone, bool isNearThermostat, int nearID){
+endSwitch::endSwitch(bool isNearZone, bool isNearThermostat, int nearID, bool isPump){
     this->isNearZone = isNearZone;
     this->isNearThermostat = isNearThermostat;
     this->nearID = nearID;
-    _pin = ZCR_OUT_PIN;
+    if(isPump){
+        _pin = ZCR_OUT_PIN;
+    }else{
+        _pin = ISO_END_PIN;
+    }
 
     pinMode(_pin, OUTPUT);
     digitalWrite(_pin, LOW);
@@ -15,7 +19,7 @@ endSwitch::endSwitch(bool isNearZone, bool isNearThermostat, int nearID){
 void endSwitch::open(){
     if(!_isOpen){
         Serial.printf("Opening end switch\n");
-        // digitalWrite(_pin, LOW);
+        digitalWrite(_pin, HIGH);
         _isOpen = true;
     }
     return;
@@ -24,7 +28,7 @@ void endSwitch::open(){
 void endSwitch::close(){
     if(_isOpen){
         Serial.printf("Closing end switch\n");
-        // digitalWrite(_pin, LOW);
+        digitalWrite(_pin, LOW);
         _isOpen = false;
     }
     return;

@@ -10,7 +10,7 @@ class endSwitch{
         bool isNearThermostat;
         int nearID;
 
-        endSwitch(bool isNearZone, bool isNearThermostat, int nearID);
+        endSwitch(bool isNearZone, bool isNearThermostat, int nearID, bool isPump);
         void open();
         void close();
     private:

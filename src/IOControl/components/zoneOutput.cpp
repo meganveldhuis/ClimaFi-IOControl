@@ -45,13 +45,13 @@ zoneOutput::zoneOutput(int zoneID, String zoneName, int thermostatID, float setP
     digitalWrite(_pin, LOW);
 
     isOpen = false;
-    
 }
 
 bool zoneOutput::checkTemp(int thermostatID, float currentTemp){
     if(this->thermostatID != thermostatID){
         return false;
     }
+    Serial.printf("Set Point for %s : %.2f. Current temp detected: %.2f\n",zoneName.c_str(), setPoint, currentTemp);
     if(_pin == 0){
         Serial.println("No pin found. Aborting.");
         return false;
@@ -76,7 +76,7 @@ bool zoneOutput::checkTemp(int thermostatID, float currentTemp){
 void zoneOutput::open(){
     if(!isOpen){
         Serial.printf("Opening pin: %d, which is in %s\n", _pin, zoneName.c_str());
-        // digitalWrite(_pin, HIGH);
+        digitalWrite(_pin, HIGH);
         this->isOpen = true;
         return;
     }
@@ -86,7 +86,7 @@ void zoneOutput::open(){
 void zoneOutput::close(){
     if(isOpen){
         Serial.printf("Closing pin: %d, which is in %s\n", _pin, zoneName.c_str());
-        // digitalWrite(_pin, LOW);
+        digitalWrite(_pin, LOW);
         isOpen = false;
         return;
     }

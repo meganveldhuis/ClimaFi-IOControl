@@ -3,7 +3,7 @@
 std::vector<zoneOutput> zoneOutputsList;
 std::vector<thermistorPort> thermistorPortsList;
 ADCOutput globalADCOutput("", -1,-1);
-endSwitch globalEndSwitch(false, false, -1);
+endSwitch globalEndSwitch(false, false, -1, false);
 
 void formatLittleFS() {
   Serial.println("Formatting LittleFS...");
@@ -26,7 +26,6 @@ JsonDocument readData(fs::FS &fs, const char * path){
         Serial.println(error.f_str());
         return doc;
     }
-    // serializeJsonPretty(doc, Serial);
     return doc;
 }
 
@@ -45,11 +44,12 @@ void initZoneOutputs(JsonArray data, bool isPump){
     }
 }
 
-void initEndSwitch(JsonArray data){
+void initEndSwitch(JsonArray data, bool isPump){
     globalEndSwitch = endSwitch (
         data[0]["isNearZone"].as<bool>(), 
         data[0]["isNearThermostat"].as<bool>(), 
-        data[0]["nearID"].as<int>()
+        data[0]["nearID"].as<int>(),
+        isPump
     );
 }
 
@@ -70,6 +70,9 @@ void createControllerClasses(JsonDocument doc){
             if(component["settingType"] == "controlledZoneOutputs"){
                 initZoneOutputs(data, false);
             }
+            if(component["settingType"] == "endSwitch"){
+                initEndSwitch(data, false);
+            }
         }
     } else if (controller == "ZonePumpController"){
         for (JsonObject component : components){
@@ -78,7 +81,7 @@ void createControllerClasses(JsonDocument doc){
                 initZoneOutputs(data, true);
             }
             if(component["settingType"] == "endSwitch"){
-                initEndSwitch(data);
+                initEndSwitch(data, true);
             }
         }
     } else if (controller == "FanCoilController"){
@@ -130,6 +133,11 @@ bool tempUpdated(int thermostatID, float currentTemp){
     bool isChanged = false;
     for (zoneOutput& zone : zoneOutputsList) {
         isChanged = isChanged || zone.checkTemp(thermostatID, currentTemp);
+        // Serial.println("check global end switch:");
+        // Serial.println(isChanged);
+        // Serial.println(globalEndSwitch.isNearZone);
+        // Serial.println(globalEndSwitch.nearID);
+        // Serial.println(zone.zoneID);
         if(isChanged && globalEndSwitch.isNearZone && globalEndSwitch.nearID == zone.zoneID){
             if(zone.isOpen){
                 globalEndSwitch.open();
@@ -145,7 +153,7 @@ bool tempUpdated(int thermostatID, float currentTemp){
 }
 
 bool updateSetPoint(float newSetPoint, int zoneID, String fanCoilName){
-    // ! this assumes you inputted a zoneID that exists
+    // ! this assumes you inputted a zoneID or fanCoilName that exists
 
     // update settings.json - but this will have to rewrite the entire file
     JsonDocument backupDocument = readData(LittleFS, "/settings.json");
@@ -178,13 +186,22 @@ bool updateSetPoint(float newSetPoint, int zoneID, String fanCoilName){
         return false;
     }
     file.close();
+
+    for (zoneOutput& zone : zoneOutputsList) {
+        if(zone.zoneID == zoneID){
+            zone.setPoint = newSetPoint;
+        }
+    }
+    if(globalADCOutput.name == fanCoilName){
+        globalADCOutput.setPoint = newSetPoint;
+    }
     Serial.printf("Successfully changed setPoint to %.3f in Zone %u\n", newSetPoint, zoneID);
     return true;
 }
 
 void updateControls(){
     std::vector<zoneOutput> zoneOutputsList;
-    endSwitch globalEndSwitch(false, false, -1);
+    endSwitch globalEndSwitch(false, false, -1, false);
     controlSetup();
     return;
 }
@@ -210,4 +227,5 @@ float getThermistorTemp(String thermistorName){
             return thermistor.getTemp();
         }
     }
+    return 0;
 }

@@ -22,7 +22,7 @@ void createControllerClasses(JsonDocument doc);
 void formatLittleFS();
 bool tempUpdated(int thermostatID, float currentTemp);
 bool updateSetPoint(float newSetPoint, int zoneID, String fanCoilName);
-void initEndSwitch(JsonArray data);
+void initEndSwitch(JsonArray data, bool isPump);
 
 void updateControls();
 bool isZoneOpen(int zoneID);

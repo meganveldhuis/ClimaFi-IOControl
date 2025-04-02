@@ -1,0 +1,15 @@
+{
+  "name": "ClimaFi-IOControl",
+  "version": "1.0.0",
+  "description": "Library for controlling ClimaFi devices",
+  "authors": [
+    {
+      "name": "Megan",
+      "email": "megan@example.com"
+    }
+  ],
+  "license": "MIT",
+  "frameworks": "arduino",
+  "platforms": "*",
+  "srcFilter": ["+<*>"]
+}

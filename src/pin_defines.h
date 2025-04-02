@@ -15,6 +15,7 @@
 
 // -- -- -- -- -- -- -- PUMP CONTROLLER: -- -- -- -- -- -- -- //
 #define ZCR_OUT_PIN 41
+#define ISO_IN_PIN 42
 // #define ZCR_OUT_PIN 25;
 
 #define ZN1_IN_PIN 40

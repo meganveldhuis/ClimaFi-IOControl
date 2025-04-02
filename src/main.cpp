@@ -59,19 +59,70 @@ void testValves(){
   // delay(15000);
 
   // ---- TEST isZoneOpen() ---- //
-  tempUpdated(1, 40);
-  tempUpdated(4, 40);
-  Serial.println(isZoneOpen(1));
-  Serial.println(isZoneOpen(4));
-  delay(5000);
-  tempUpdated(1, 10);
-  tempUpdated(4, 10);
-  Serial.println(isZoneOpen(1));
-  Serial.println(isZoneOpen(4));
-  delay(5000);
+  // tempUpdated(1, 40);
+  // tempUpdated(4, 40);
+  // Serial.println(isZoneOpen(1));
+  // Serial.println(isZoneOpen(4));
+  // delay(5000);
+  // tempUpdated(1, 10);
+  // tempUpdated(4, 10);
+  // Serial.println(isZoneOpen(1));
+  // Serial.println(isZoneOpen(4));
+  // delay(5000);
+}
+
+void testPumps(){
+  // ---- TEST : tempUpdated and turn on/off valves ---- //
+  // tempUpdated(1, 40);
+  // tempUpdated(2, 40);
+  // tempUpdated(3, 40);
+  // delay(5000);
+  // tempUpdated(1, 10);
+  // tempUpdated(2, 10);
+  // tempUpdated(3, 10);
+  // delay(5000);
+  // tempUpdated(1, 40);
+  // tempUpdated(2, 40);
+  // tempUpdated(3, 40);
+  // delay(5000);
+  // tempUpdated(1, 10);
+  // tempUpdated(2, 10);
+  // tempUpdated(3, 10);
+  // delay(5000);
+
+  // ---- TEST : Update Set Point ---- //
+  // Serial.println("Updating set point");
+  // updateSetPoint(70, 2, "");
+  // delay(5000);
+  // tempUpdated(2, 80); // should be off
+  // delay(5000);
+  // tempUpdated(2, 25); //should be on
+  // delay(15000);
+
+  // ---- TEST isZoneOpen() ---- //
+  // tempUpdated(1, 40);
+  // tempUpdated(2, 40);
+  // Serial.println(isZoneOpen(1));
+  // Serial.println(isZoneOpen(2));
+  // delay(5000);
+  // tempUpdated(1, 10);
+  // tempUpdated(2, 10);
+  // Serial.println(isZoneOpen(1));
+  // Serial.println(isZoneOpen(2));
+  // delay(5000);
+
+  // ---- TEST: ISO_END and ZCR ---- //
+  // tempUpdated(1,25); // both should be off
+  // delay(5000);
+  // tempUpdated(1,10); //requesting heat and zone should turn on, so both ISO_END and ZCR should be turned on
+  // delay(5000);
+  // tempUpdated(3, 60); // cooling, so ISO_END should be off, and zone (ZCR) should be on
+  // delay(5000);
+  // tempUpdated(3, 10); // both off
+  // delay(5000);
 }
 
 void loop(){
-  testValves();
+  testPumps();
 }
 

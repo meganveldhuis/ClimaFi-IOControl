@@ -48,28 +48,31 @@ zoneOutput::zoneOutput(int zoneID, String zoneName, int thermostatID, float setP
 }
 
 bool zoneOutput::checkTemp(int thermostatID, float currentTemp){
+    bool isRequestingHeat = false;
     if(this->thermostatID != thermostatID){
         return false;
     }
-    Serial.printf("Set Point for %s : %.2f. Current temp detected: %.2f\n",zoneName.c_str(), setPoint, currentTemp);
+    Serial.printf("Set Point for %s : %.2f. Current temp detected: %.2f. Cooling? %d\n",zoneName.c_str(), setPoint, currentTemp, isCool);
     if(_pin == 0){
         Serial.println("No pin found. Aborting.");
         return false;
     }
     if(setPoint > currentTemp){ // Too Cold
+        isRequestingHeat = true;
         if(isCool){
             close();
         }else{
             open();
         }
     }else{ // Too Hot
+        isRequestingHeat = false;
         if(isCool){
             open();
         }else{
             close();
         }
     }
-    return true;
+    return isRequestingHeat;
     
 }
 

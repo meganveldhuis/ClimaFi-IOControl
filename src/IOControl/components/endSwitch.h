@@ -6,11 +6,9 @@
 
 class endSwitch{
     public:
-        bool isNearZone;
-        bool isNearThermostat;
-        int nearID;
+        bool isZone;
 
-        endSwitch(bool isNearZone, bool isNearThermostat, int nearID, bool isPump);
+        endSwitch(bool isZone, bool isPump);
         void open();
         void close();
     private:

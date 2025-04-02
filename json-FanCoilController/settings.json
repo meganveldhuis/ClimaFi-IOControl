@@ -10,9 +10,11 @@
       "settingType": "thermistorPort",
       "data": [
         {
+          "id": 1,
           "name": "thermistorName"
         },
         {
+          "id": 2,
           "name": "secondThermistorName"
         }
       ]

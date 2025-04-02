@@ -5,6 +5,7 @@ std::vector<thermistorPort> thermistorPortsList;
 ADCOutput globalADCOutput("", -1,-1);
 endSwitch globalThermostatEndSwitch(true, false);
 endSwitch globalZoneEndSwitch(false, false);
+String globalControllerType = "";
 
 void formatLittleFS() {
   Serial.println("Formatting LittleFS...");
@@ -47,17 +48,17 @@ void initZoneOutputs(JsonArray data, bool isPump){
 }
 
 void createControllerClasses(JsonDocument doc){
-    String controller;
+    // String controller;
 
     JsonObject controllerTypes = doc["controllerTypes"];
     JsonArray components = doc["components"];
 
     for (JsonPair kv : controllerTypes) {
         if(doc["controller"] == kv.value().as<int>()){
-            controller = kv.key().c_str();
+            globalControllerType = kv.key().c_str();
         }
     }
-    if(controller == "ZoneValveController"){
+    if(globalControllerType == "ZoneValveController"){
         Serial.println("Valve detected");
         for (JsonObject component : components){
             
@@ -72,7 +73,7 @@ void createControllerClasses(JsonDocument doc){
                 globalThermostatEndSwitch = endSwitch(false, false);
             }
         }
-    } else if (controller == "ZonePumpController"){
+    } else if (globalControllerType == "ZonePumpController"){
         Serial.println("Pump detected");
         for (JsonObject component : components){
             JsonArray data = component["data"];
@@ -86,7 +87,7 @@ void createControllerClasses(JsonDocument doc){
                 globalThermostatEndSwitch = endSwitch(false, true);
             }
         }
-    } else if (controller == "FanCoilController"){
+    } else if (globalControllerType == "FanCoilController"){
         Serial.println("Fan coil detected");
         for (JsonObject component : components){
             JsonArray data = component["data"];
@@ -135,30 +136,32 @@ void controlSetup(){
 void tempUpdated(int thermostatID, float currentTemp){
     bool isAnyOpened = false;
     bool isRequestingHeat = false;
-    for (zoneOutput& zone : zoneOutputsList) {
-        isRequestingHeat = isRequestingHeat ||  zone.checkTemp(thermostatID, currentTemp);
-        if(zone.isOpen){
-            isAnyOpened = true;
+    if(globalControllerType == "FanCoilController"){
+        globalADCOutput.checkTemp(thermostatID, currentTemp);
+    }else{
+        for (zoneOutput& zone : zoneOutputsList) {
+            isRequestingHeat = isRequestingHeat ||  zone.checkTemp(thermostatID, currentTemp);
+            if(zone.isOpen){
+                isAnyOpened = true;
+            }
+        }
+        if(isAnyOpened){
+            globalZoneEndSwitch.open();
+        }else{
+            globalZoneEndSwitch.close();
+        }
+        if(isRequestingHeat){
+            globalThermostatEndSwitch.open();
+        }else{
+            globalThermostatEndSwitch.close();
         }
     }
-    if(isAnyOpened){
-        globalZoneEndSwitch.open();
-    }else{
-        globalZoneEndSwitch.close();
-    }
-    if(isRequestingHeat){
-        globalThermostatEndSwitch.open();
-    }else{
-        globalThermostatEndSwitch.close();
-    }
-    if(globalADCOutput.name){
-        globalADCOutput.checkTemp(thermostatID, currentTemp);
-    }
+    
+    
     return;
 }
 
 bool updateSetPoint(float newSetPoint, int zoneID, String fanCoilName){
-    // ! this assumes you inputted a zoneID or fanCoilName that exists
 
     // update settings.json - but this will have to rewrite the entire file
     JsonDocument backupDocument = readData(LittleFS, "/settings.json");
@@ -168,9 +171,9 @@ bool updateSetPoint(float newSetPoint, int zoneID, String fanCoilName){
     for (JsonObject component : components){
         JsonArray data = component["data"];
         for (JsonObject dataItem : data) {
-            if(dataItem["zoneID"] == zoneID){
+            if(globalControllerType == "FanCoilController" && dataItem["name"] == fanCoilName){
                 dataItem["setPoint"] = newSetPoint;
-            }else if(dataItem["name"] != "" && dataItem["name"] == fanCoilName){
+            }else if((globalControllerType== "ZoneValveController" || globalControllerType== "ZonePumpController") && dataItem["zoneID"] == zoneID){
                 dataItem["setPoint"] = newSetPoint;
             }
         }
@@ -205,6 +208,7 @@ bool updateSetPoint(float newSetPoint, int zoneID, String fanCoilName){
 }
 
 void updateControls(){
+    //reset globals
     std::vector<zoneOutput> zoneOutputsList;
     std::vector<thermistorPort> thermistorPortsList;
     controlSetup();

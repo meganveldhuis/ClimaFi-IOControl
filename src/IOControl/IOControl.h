@@ -14,6 +14,7 @@ extern std::vector<zoneOutput> zoneOutputsList;
 extern std::vector<thermistorPort> thermistorPortsList;
 extern endSwitch globalEndSwitch;
 extern ADCOutput globalADCOutput;
+extern String globalControllerType;
 
 void controlSetup();
 JsonDocument readData(fs::FS &fs, const char * path);

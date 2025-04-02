@@ -122,7 +122,28 @@ void testPumps(){
   // delay(5000);
 }
 
+void testFanCoil(){
+  // ---- TEST : tempUpdated and turn on/off valves ---- //
+  // tempUpdated(1, 40);
+  // delay(5000);
+  // tempUpdated(1, 10);
+  // delay(5000);
+
+  // ---- TEST: get thermistor temp ---- //
+  // Serial.println(getThermistorTemp("thermistorName"));
+  // Serial.println(getThermistorTemp("secondThermistorName"));
+
+  // ---- TEST : Update Set Point ---- //
+  // Serial.println("Updating set point");
+  // updateSetPoint(45, 0, "fanCoilName");
+  // delay(5000);
+  // tempUpdated(2, 50); // should be off
+  // delay(5000);
+  // tempUpdated(2, 10); // should be on
+  // delay(15000);
+}
+
 void loop(){
-  testPumps();
+  testFanCoil();
 }
 

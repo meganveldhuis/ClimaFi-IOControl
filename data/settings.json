@@ -4,67 +4,28 @@
     "ZonePumpController": 1,
     "FanCoilController": 2
   },
-  "controller": 1,
-  "thermostatType": {
-    "CLASSIC": 0,
-    "THREE_WIRE": 1,
-    "NETWORKED": 2
-  },
+  "controller": 2,
   "components": [
     {
-      "settingType": "controlledZoneOutputs",
+      "settingType": "thermistorPort",
       "data": [
-        {
-          "zoneID": 1,
-          "zoneName": "livingRoomZoneName",
-          "thermostatID": 1,
-          "setPoint": 23,
-          "isCool": false
+         {
+          "id": 1,
+          "name": "thermistorName"
         },
         {
-          "zoneID": 2,
-          "zoneName": "bedroomZoneName",
-          "thermostatID": 2,
-          "setPoint": 23,
-          "isCool": false
-        },
-        {
-          "zoneID": 3,
-          "zoneName": "basementZoneName",
-          "thermostatID": 3,
-          "setPoint": 23,
-          "isCool": true
+          "id": 2,
+          "name": "secondThermistorName"
         }
       ]
     },
     {
-      "settingType": "thermostatEndSwitch"
-    },
-    {
-      "settingType": "zoneEndSwitch"
-    },
-    {
-      "settingType": "Thermostat",
+      "settingType": "ADCOutput",
       "data": [
         {
-          "id": 1,
-          "name": "thermostatName",
-          "type": 1
-        },
-        {
-          "id": 2,
-          "name": "thermostatName",
-          "type": 2
-        },
-        {
-          "id": 3,
-          "name": "thermostatName",
-          "type": 0
-        },
-        {
-          "id": 4,
-          "name": "thermostatName",
-          "type": 1
+          "name": "fanCoilName",
+          "thermostatID": 1,
+          "setPoint": 24
         }
       ]
     }

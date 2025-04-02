@@ -1,0 +1,27 @@
+#######################################
+# Syntax Coloring Map
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+ADCOutput	KEYWORD1
+endSwitch	KEYWORD1
+thermistorPort	KEYWORD1
+zoneOutput	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+controlSetup	KEYWORD2
+tempUpdated     KEYWORD2
+updateSetPoint	KEYWORD2
+updateControls	KEYWORD2
+isZoneOpen	KEYWORD2
+isADCOn	KEYWORD2
+getThermistorTemp	KEYWORD2
+
+######################################
+# Constants (LITERAL1)
+#######################################

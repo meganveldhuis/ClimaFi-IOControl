@@ -25,5 +25,9 @@ float thermistorPort::getTemp(){
     TempC = a * pow(Rntc, b) + c - 2.0f;
     TempF = (TempC * 1.8f) + 32.0f;
 
+    if (fabs(TempC - 403.28) < 0.01 || fabs(TempF - 757.90) < 0.01) {
+        Serial.printf("Error: Thermistor %s not connected\n", name.c_str());
+    }
+
     return TempF;
 }

@@ -37,12 +37,14 @@ zoneOutput::zoneOutput(int zoneID, String zoneName, int thermostatID, float setP
                 this->_pin = ZN4_OUT_PIN;
                 break;
             default:
-                this->_pin = 0;
+                this->_pin = 0; //indicate error
                 break;
         };
     }
-    pinMode(_pin, OUTPUT);
-    digitalWrite(_pin, LOW);
+    if(_pin != 0){
+        pinMode(_pin, OUTPUT);
+        digitalWrite(_pin, LOW);
+    }
 
     isOpen = false;
 }

@@ -13,6 +13,11 @@
 #define ZN3_OUT_PIN 40
 #define ZN4_OUT_PIN 39
 
+#define ZN1_SENSE_PIN 38
+#define ZN2_SENSE_PIN 37
+#define ZN3_SENSE_PIN 36
+#define ZN4_SENSE_PIN 35
+
 // -- -- -- -- -- -- -- PUMP CONTROLLER: -- -- -- -- -- -- -- //
 #define ZCR_OUT_PIN 41
 #define ISO_IN_PIN 42

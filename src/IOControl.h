@@ -14,9 +14,11 @@
 #include "components/endSwitch.h"
 #include "components/ADCOutput.h"
 #include "components/thermistorPort.h"
+#include "components/thermostat.h"
 
 extern std::vector<zoneOutput> zoneOutputsList;
 extern std::vector<thermistorPort> thermistorPortsList;
+extern std::vector<thermostat> thermostatList;
 extern endSwitch globalEndSwitch;
 extern ADCOutput globalADCOutput;
 extern String globalControllerType;

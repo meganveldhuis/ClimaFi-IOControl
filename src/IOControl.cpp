@@ -2,6 +2,8 @@
 // Define and initialize global components
 std::vector<zoneOutput> zoneOutputsList;
 std::vector<thermistorPort> thermistorPortsList;
+std::vector<thermostat> thermostatList;
+
 ADCOutput globalADCOutput("", -1,-1);
 endSwitch globalThermostatEndSwitch(true, false);
 endSwitch globalZoneEndSwitch(false, false);
@@ -47,8 +49,18 @@ void initZoneOutputs(JsonArray data, bool isPump){
     }
 }
 
+void initThermostats(JsonArray data){
+    for (JsonObject dataItem : data) {
+        thermostat thermostatInstance(
+            dataItem["thermostatID"].as<int>(),
+            dataItem["name"].as<String>(), 
+            dataItem["type"].as<int>()
+        );
+        thermostatList.push_back(thermostatInstance);
+    }
+}
+
 void createControllerClasses(JsonDocument doc){
-    // String controller;
 
     JsonObject controllerTypes = doc["controllerTypes"];
     JsonArray components = doc["components"];
@@ -61,16 +73,16 @@ void createControllerClasses(JsonDocument doc){
     if(globalControllerType == "ZoneValveController"){
         Serial.println("Valve detected");
         for (JsonObject component : components){
-            
             if(component["settingType"] == "controlledZoneOutputs"){
                 JsonArray data = component["data"];
                 initZoneOutputs(data, false);
-            }
-            if(component["settingType"] == "zoneEndSwitch"){
+            } else if(component["settingType"] == "zoneEndSwitch"){
                 globalZoneEndSwitch = endSwitch(true, false);
-            }
-            if(component["settingType"] == "thermostatEndSwitch"){
+            } else if(component["settingType"] == "thermostatEndSwitch"){
                 globalThermostatEndSwitch = endSwitch(false, false);
+            } else if(component["settingType"] == "Thermostat"){
+                JsonArray data = component["data"];
+                initThermostats(data);
             }
         }
     } else if (globalControllerType == "ZonePumpController"){
@@ -79,12 +91,13 @@ void createControllerClasses(JsonDocument doc){
             JsonArray data = component["data"];
             if(component["settingType"] == "controlledZoneOutputs"){
                 initZoneOutputs(data, true);
-            }
-            if(component["settingType"] == "zoneEndSwitch"){
+            } else if(component["settingType"] == "zoneEndSwitch"){
                 globalZoneEndSwitch = endSwitch(true, true);
-            }
-            if(component["settingType"] == "thermostatEndSwitch"){
+            } else if(component["settingType"] == "thermostatEndSwitch"){
                 globalThermostatEndSwitch = endSwitch(false, true);
+            } else if(component["settingType"] == "Thermostat"){
+                JsonArray data = component["data"];
+                initThermostats(data);
             }
         }
     } else if (globalControllerType == "FanCoilController"){
@@ -101,8 +114,7 @@ void createControllerClasses(JsonDocument doc){
                     number++;
                     thermistorPortsList.push_back(thermistor);
                 }
-            }
-            if(component["settingType"] == "ADCOutput"){
+            } else if(component["settingType"] == "ADCOutput"){
                 globalADCOutput = ADCOutput(
                     data[0]["name"].as<String>(),
                     data[0]["thermostatID"].as<int>(),
@@ -156,8 +168,6 @@ void tempUpdated(int thermostatID, float currentTemp){
             globalThermostatEndSwitch.close();
         }
     }
-    
-    
     return;
 }
 
@@ -237,4 +247,12 @@ float getThermistorTemp(String thermistorName){
         }
     }
     return 0;
+}
+
+// check state of thermostat
+// WIRED :
+    // is it on or off
+
+bool isThermostatOn(int thermostatID){
+
 }

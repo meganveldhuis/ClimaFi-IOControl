@@ -35,9 +35,11 @@ void formatLittleFS();
 void tempUpdated(int thermostatID, float currentTemp);
 bool updateSetPoint(float newSetPoint, int zoneID, String fanCoilName);
 
+
 void updateControls();
 bool isZoneOpen(int zoneID);
 bool isADCOn();
+void stateChanged(int thermostatID, bool isThermostatOn);
 float getThermistorTemp(String thermistorName);
 bool isThermostatOn(int thermostatID);
 bool areAllThermostatsOff();

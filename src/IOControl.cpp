@@ -153,25 +153,79 @@ void tempUpdated(int thermostatID, float currentTemp){
     bool isRequestingHeat = false;
     if(globalControllerType == "FanCoilController"){
         globalADCOutput.checkTemp(thermostatID, currentTemp);
-    }else{
+    }else{ // zone valve or pump controller:
         for (zoneOutput& zone : zoneOutputsList) {
-            isRequestingHeat = isRequestingHeat ||  zone.checkTemp(thermostatID, currentTemp);
+            // isRequestingHeat = isRequestingHeat ||  zone.checkTemp(thermostatID, currentTemp);
+            zone.checkTemp(thermostatID, currentTemp);
             if(zone.isOpen){
                 isAnyOpened = true;
             }
         }
+
         if(isAnyOpened){
             globalZoneEndSwitch.open();
         }else{
             globalZoneEndSwitch.close();
         }
-        if(isRequestingHeat){
-            globalThermostatEndSwitch.open();
+
+        // if(isRequestingHeat){
+        //     globalThermostatEndSwitch.open();
+        // }else{
+        //     globalThermostatEndSwitch.close();
+        // }
+    }
+    return;
+}
+
+void stateChanged(int thermostatID, bool isThermostatOn){
+    if(globalControllerType == "FanCoilController"){
+        if(globalADCOutput.isThermostatIDRelevant(thermostatID)){ // check if thermostat ID is relevant
+            if(isThermostatOn){
+                globalADCOutput.turnOn();
+            }else{
+                globalADCOutput.turnOff();
+            }
+        }
+    }else{ // zone valve or pump controller:
+        bool isAnyOpened = false;
+        bool isRequestingHeat = false;
+        for (zoneOutput& zone : zoneOutputsList) {
+            if(zone.isThermostatIDRelevant(thermostatID)){ //check if thermostatID is relevant
+                if(isThermostatOn){
+                    zone.open();
+                }else{
+                    zone.close();
+                }
+            }
+            if(zone.isOpen){
+                isAnyOpened = true;
+            }
+        }
+
+        if(isAnyOpened){
+            globalZoneEndSwitch.open();
         }else{
+            globalZoneEndSwitch.close();
+        }
+
+        if(isThermostatOn){
+            globalThermostatEndSwitch.open();
+        }else if(areAllThermostatsOff()){
             globalThermostatEndSwitch.close();
+        }else{
+            globalThermostatEndSwitch.open();
         }
     }
     return;
+}
+
+bool areAllThermostatsOff() {
+    for (const auto& [thermostatID, isOn] : thermostatStates) {
+        if (isOn) {
+            return false; // At least one thermostat is on
+        }
+    }
+    return true; // All thermostats are off
 }
 
 bool updateSetPoint(float newSetPoint, int zoneID, String fanCoilName){

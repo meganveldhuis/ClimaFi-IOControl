@@ -13,6 +13,7 @@ class ADCOutput{
     
         ADCOutput(String name, int thermostatID, float setPoint);
         void checkTemp(int thermostatID, float currentTemp);
+        bool isThermostatIDRelevant(int thermostatID);
         void turnOn();
         void turnOff();
         

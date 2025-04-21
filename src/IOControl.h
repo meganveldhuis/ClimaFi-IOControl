@@ -40,5 +40,6 @@ bool isZoneOpen(int zoneID);
 bool isADCOn();
 float getThermistorTemp(String thermistorName);
 bool isThermostatOn(int thermostatID);
+bool areAllThermostatsOff();
 
 #endif

@@ -23,6 +23,10 @@ void ADCOutput::checkTemp(int thermostatID, float currentTemp){
     return;
 }
 
+bool ADCOutput::isThermostatIDRelevant(int thermostatID){
+    return this->thermostatID == thermostatID; //returns true if relevant, and false otherwise
+}
+
 void ADCOutput::turnOn(){
     if(!isOn){
         analogWrite(_pin, HIGH);

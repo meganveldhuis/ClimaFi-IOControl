@@ -78,6 +78,10 @@ bool zoneOutput::checkTemp(int thermostatID, float currentTemp){
     
 }
 
+bool zoneOutput::isThermostatIDRelevant(int thermostatID){
+    return this->thermostatID == thermostatID; //returns true if relevant, and false otherwise
+}
+
 void zoneOutput::open(){
     if(!isOpen){
         Serial.printf("Opening pin: %d, which is in %s\n", _pin, zoneName.c_str());

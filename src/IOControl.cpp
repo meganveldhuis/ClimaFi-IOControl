@@ -1,8 +1,11 @@
 #include "IOControl.h"
+
 // Define and initialize global components
 std::vector<zoneOutput> zoneOutputsList;
 std::vector<thermistorPort> thermistorPortsList;
 std::vector<thermostat> thermostatList;
+
+std::unordered_map<int, bool> thermostatStates;
 
 ADCOutput globalADCOutput("", -1,-1);
 endSwitch globalThermostatEndSwitch(true, false);
@@ -254,5 +257,11 @@ float getThermistorTemp(String thermistorName){
     // is it on or off
 
 bool isThermostatOn(int thermostatID){
-
+    for (thermostat& thermostat : thermostatList) {
+        if (thermostat.id == thermostatID) {
+            return thermostat.isOn();
+        }
+    }
+    Serial.printf("No thermostat with id %d found\n", thermostatID);
+    return false;
 }

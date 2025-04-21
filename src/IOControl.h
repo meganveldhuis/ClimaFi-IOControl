@@ -9,6 +9,7 @@
 #include "LittleFS.h"
 #include "ArduinoJson.h"
 #include <vector>
+#include <unordered_map>
 
 #include "components/zoneOutput.h"
 #include "components/endSwitch.h"
@@ -19,6 +20,9 @@
 extern std::vector<zoneOutput> zoneOutputsList;
 extern std::vector<thermistorPort> thermistorPortsList;
 extern std::vector<thermostat> thermostatList;
+
+extern std::unordered_map<int, bool> thermostatStates;
+
 extern endSwitch globalEndSwitch;
 extern ADCOutput globalADCOutput;
 extern String globalControllerType;
@@ -35,5 +39,6 @@ void updateControls();
 bool isZoneOpen(int zoneID);
 bool isADCOn();
 float getThermistorTemp(String thermistorName);
+bool isThermostatOn(int thermostatID);
 
 #endif

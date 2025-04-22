@@ -73,17 +73,18 @@ void createControllerClasses(JsonDocument doc){
             globalControllerType = kv.key().c_str();
         }
     }
+
     if(globalControllerType == "ZoneValveController"){
         Serial.println("Valve detected");
         for (JsonObject component : components){
-            if(component["settingType"] == "controlledZoneOutputs"){
+            if(component["componentType"] == "controlledZoneOutputs"){
                 JsonArray data = component["data"];
                 initZoneOutputs(data, false);
-            } else if(component["settingType"] == "zoneEndSwitch"){
+            } else if(component["componentType"] == "zoneEndSwitch"){
                 globalZoneEndSwitch = endSwitch(true, false);
-            } else if(component["settingType"] == "thermostatEndSwitch"){
+            } else if(component["componentType"] == "thermostatEndSwitch"){
                 globalThermostatEndSwitch = endSwitch(false, false);
-            } else if(component["settingType"] == "Thermostat"){
+            } else if(component["componentType"] == "thermostat"){
                 JsonArray data = component["data"];
                 initThermostats(data);
             }
@@ -92,13 +93,13 @@ void createControllerClasses(JsonDocument doc){
         Serial.println("Pump detected");
         for (JsonObject component : components){
             JsonArray data = component["data"];
-            if(component["settingType"] == "controlledZoneOutputs"){
+            if(component["componentType"] == "controlledZoneOutputs"){
                 initZoneOutputs(data, true);
-            } else if(component["settingType"] == "zoneEndSwitch"){
+            } else if(component["componentType"] == "zoneEndSwitch"){
                 globalZoneEndSwitch = endSwitch(true, true);
-            } else if(component["settingType"] == "thermostatEndSwitch"){
+            } else if(component["componentType"] == "thermostatEndSwitch"){
                 globalThermostatEndSwitch = endSwitch(false, true);
-            } else if(component["settingType"] == "Thermostat"){
+            } else if(component["componentType"] == "thermostat"){
                 JsonArray data = component["data"];
                 initThermostats(data);
             }
@@ -107,7 +108,7 @@ void createControllerClasses(JsonDocument doc){
         Serial.println("Fan coil detected");
         for (JsonObject component : components){
             JsonArray data = component["data"];
-            if(component["settingType"] == "thermistorPort"){
+            if(component["componentType"] == "thermistorPort"){
                 int number = 1;
                 for (JsonObject dataItem : data) {
                     thermistorPort thermistor(
@@ -117,7 +118,7 @@ void createControllerClasses(JsonDocument doc){
                     number++;
                     thermistorPortsList.push_back(thermistor);
                 }
-            } else if(component["settingType"] == "ADCOutput"){
+            } else if(component["componentType"] == "ADCOutput"){
                 globalADCOutput = ADCOutput(
                     data[0]["name"].as<String>(),
                     data[0]["thermostatID"].as<int>(),
@@ -149,14 +150,19 @@ void controlSetup(){
 }
 
 void tempUpdated(int thermostatID, float currentTemp){
-    bool isAnyOpened = false;
-    bool isRequestingHeat = false;
+
     if(globalControllerType == "FanCoilController"){
         globalADCOutput.checkTemp(thermostatID, currentTemp);
     }else{ // zone valve or pump controller:
+        bool isAnyOpened = false;
         for (zoneOutput& zone : zoneOutputsList) {
-            // isRequestingHeat = isRequestingHeat ||  zone.checkTemp(thermostatID, currentTemp);
-            zone.checkTemp(thermostatID, currentTemp);
+            int response = zone.checkTemp(thermostatID, currentTemp);
+            if(response == 0){ //Closed Port
+                // TODO : broadcast that this zone was opened
+            }else if (response == 1){ //Opened Port
+                // TODO : broadcast that this zone was opened
+            } //else, nothing happened, so do nothing
+
             if(zone.isOpen){
                 isAnyOpened = true;
             }
@@ -167,17 +173,12 @@ void tempUpdated(int thermostatID, float currentTemp){
         }else{
             globalZoneEndSwitch.close();
         }
-
-        // if(isRequestingHeat){
-        //     globalThermostatEndSwitch.open();
-        // }else{
-        //     globalThermostatEndSwitch.close();
-        // }
     }
     return;
 }
 
 void stateChanged(int thermostatID, bool isThermostatOn){
+    // call when the wired thermostat states have changed
     if(globalControllerType == "FanCoilController"){
         if(globalADCOutput.isThermostatIDRelevant(thermostatID)){ // check if thermostat ID is relevant
             if(isThermostatOn){
@@ -278,6 +279,8 @@ void updateControls(){
     //reset globals
     std::vector<zoneOutput> zoneOutputsList;
     std::vector<thermistorPort> thermistorPortsList;
+    std::vector<thermostat> thermostatList;
+    std::unordered_map<int, bool> thermostatStates;
     controlSetup();
     return;
 }
@@ -303,14 +306,12 @@ float getThermistorTemp(String thermistorName){
             return thermistor.getTemp();
         }
     }
+    Serial.printf("No thermistor with name %s found\n", thermistorName.c_str());
     return 0;
 }
 
-// check state of thermostat
-// WIRED :
-    // is it on or off
-
 bool isThermostatOn(int thermostatID){
+    // check state of (wired) thermostat : is it on or off
     for (thermostat& thermostat : thermostatList) {
         if (thermostat.id == thermostatID) {
             return thermostat.isOn();

@@ -6,6 +6,10 @@
 #include <iostream>
 #include "pin_defines.h"
 
+#define CLOSED_PORT 0
+#define OPENED_PORT 1
+#define NO_CHANGE 9
+
 class zoneOutput{
     public:
         int zoneID;
@@ -18,7 +22,7 @@ class zoneOutput{
         
         
         zoneOutput(int id, String zoneName, int thermostatID, float setPoint, bool isCool, bool isPump);
-        bool checkTemp(int thermostatID, float currentTemp);
+        int checkTemp(int thermostatID, float currentTemp);
         bool isThermostatIDRelevant(int thermostatID);
         void open();
         void close();

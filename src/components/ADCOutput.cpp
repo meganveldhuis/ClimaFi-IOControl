@@ -15,8 +15,7 @@ void ADCOutput::checkTemp(int thermostatID, float currentTemp){
         return;
     }
     if(setPoint > currentTemp){
-        turnOn();
-        
+        turnOn(); 
     }else{
         turnOff();
     }

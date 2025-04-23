@@ -44,6 +44,7 @@ void initZoneOutputs(JsonArray data, bool isPump){
             dataItem["zoneID"].as<int>(),
             dataItem["zoneName"].as<String>(), 
             dataItem["thermostatID"].as<int>(), 
+            dataItem["rank"].as<int>(),
             dataItem["setPoint"].as<float>(), 
             dataItem["isCool"].as<bool>(),
             isPump

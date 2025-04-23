@@ -1,8 +1,9 @@
 #include "ADCOutput.h"
 
-ADCOutput::ADCOutput(String name, int thermostatID, float setPoint){
+ADCOutput::ADCOutput(String name, int thermostatID, int rank, float setPoint){
     this->name = name;
     this->thermostatID = thermostatID;
+    this->rank = rank;
     this->setPoint = setPoint;
     this->_pin = COIL_PWM_PIN;
     pinMode(_pin, OUTPUT);

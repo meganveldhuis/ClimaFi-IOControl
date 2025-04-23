@@ -1,12 +1,13 @@
 #include "zoneOutput.h"
 
-zoneOutput::zoneOutput(int zoneID, String zoneName, int thermostatID, float setPoint, bool isCool, bool isPump){
+zoneOutput::zoneOutput(int zoneID, String zoneName, int thermostatID, int rank, float setPoint, bool isCool, bool isPump){
     this->zoneID = zoneID;
     this->zoneName = zoneName;
     this->thermostatID = thermostatID;
     this->setPoint = setPoint;
     this->isCool = isCool;
     this->isPump = isPump;
+    this->rank = rank;
     if(isPump){
         switch(zoneID){
             case 1:

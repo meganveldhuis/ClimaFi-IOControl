@@ -19,9 +19,9 @@ class zoneOutput{
         bool isCool;
         bool isPump;
         bool isOpen;
+        int rank;
         
-        
-        zoneOutput(int id, String zoneName, int thermostatID, float setPoint, bool isCool, bool isPump);
+        zoneOutput(int id, String zoneName, int thermostatID, int rank, float setPoint, bool isCool, bool isPump);
         int checkTemp(int thermostatID, float currentTemp);
         bool isThermostatIDRelevant(int thermostatID);
         void open();

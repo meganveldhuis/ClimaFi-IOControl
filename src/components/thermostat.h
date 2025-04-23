@@ -10,7 +10,7 @@ class thermostat{
         String name;
         int type;
         
-        thermostat::thermostat(int id, String name, int type);
+        thermostat(int id, String name, int type);
         bool isOn();
     private:
         int _pin;

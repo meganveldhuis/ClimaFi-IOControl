@@ -43,5 +43,6 @@ void stateChanged(int thermostatID, bool isThermostatOn);
 float getThermistorTemp(String thermistorName);
 bool isThermostatOn(int thermostatID);
 bool areAllThermostatsOff();
+int getPortStatus();
 
 #endif

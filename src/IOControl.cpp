@@ -221,8 +221,8 @@ void stateChanged(int thermostatID, bool isThermostatOn){
 }
 
 bool areAllThermostatsOff() {
-    for (const auto& [thermostatID, isOn] : thermostatStates) {
-        if (isOn) {
+    for (auto it = thermostatStates.begin(); it != thermostatStates.end(); ++it) {
+        if (it->second) { // Check the value (isOn)
             return false; // At least one thermostat is on
         }
     }
@@ -319,4 +319,22 @@ bool isThermostatOn(int thermostatID){
     }
     Serial.printf("No thermostat with id %d found\n", thermostatID);
     return false;
+}
+
+int getPortStatus(){
+    int status = 0b0;
+    if(globalControllerType == "FanCoilController"){
+        status = globalADCOutput.isOn ? 0b1 : 0b0;
+        return status;
+    }else{
+        int bitPosition = 0; // Track the bit position for each zone
+        for (zoneOutput& zone : zoneOutputsList) {
+            bool thisStatus = zone.isOpen;
+            if (thisStatus) {
+                status |= (1 << bitPosition); // Set the corresponding bit to 1
+            }
+            bitPosition++; // Move to the next bit position
+        }
+    }
+    return status;
 }

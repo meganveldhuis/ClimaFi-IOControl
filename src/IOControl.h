@@ -33,16 +33,16 @@ JsonDocument readData(fs::FS &fs, const char * path);
 void initZoneOutputs(JsonArray data, bool isPump);
 void createControllerClasses(JsonDocument doc);
 void formatLittleFS();
-void tempUpdated(int thermostatID, float currentTemp);
-bool updateSetPoint(float newSetPoint, int zoneID, String fanCoilName);
+void tempUpdated(String thermostatID, float currentTemp);
+bool updateSetPoint(float newSetPoint, String zoneID, String fanCoilName);
 
 
 void updateControls();
-bool isZoneOpen(int zoneID);
+bool isZoneOpen(String zoneID);
 bool isADCOn();
-void stateChanged(int thermostatID, bool isThermostatOn);
+void stateChanged(String thermostatID, bool isThermostatOn);
 float getThermistorTemp(String thermistorName);
-bool isThermostatOn(int thermostatID);
+bool isThermostatOn(String thermostatID);
 bool areAllThermostatsOff();
 int getPortStatus();
 

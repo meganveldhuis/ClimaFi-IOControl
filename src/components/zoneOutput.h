@@ -12,18 +12,18 @@
 
 class zoneOutput{
     public:
-        int zoneID;
+        String zoneID;
         String zoneName;
-        int thermostatID;
-        float setPoint;
+        String thermostatID;
+        int16_t setPoint;
         bool isCool;
         bool isPump;
         bool isOpen;
-        int rank;
+        uint8_t rank;
         
-        zoneOutput(int id, String zoneName, int thermostatID, int rank, float setPoint, bool isCool, bool isPump);
-        int checkTemp(int thermostatID, float currentTemp);
-        bool isThermostatIDRelevant(int thermostatID);
+        zoneOutput(uint8_t zoneNum, String zoneID, String zoneName, String thermostatID, uint8_t rank, float setPoint, bool isCool, bool isPump);
+        int checkTemp(String thermostatID, float currentTemp);
+        bool isThermostatIDRelevant(String thermostatID);
         void open();
         void close();
 

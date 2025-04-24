@@ -10,7 +10,7 @@ endSwitch::endSwitch(bool isZone, bool isPump){
         _pin = ISO_IN_PIN;
     }else{
         _pin = 0; // error
-        Serial.println("error assigning pin");
+        Serial.println("ERROR::: Code bug. Failed to assign pin");
     }
     
     pinMode(_pin, OUTPUT);

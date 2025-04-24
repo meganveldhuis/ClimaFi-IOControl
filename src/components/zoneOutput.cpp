@@ -1,6 +1,6 @@
 #include "zoneOutput.h"
 
-zoneOutput::zoneOutput(int zoneID, String zoneName, int thermostatID, int rank, float setPoint, bool isCool, bool isPump){
+zoneOutput::zoneOutput(uint8_t zoneNum, String zoneID, String zoneName, String thermostatID, uint8_t rank, float setPoint, bool isCool, bool isPump){
     this->zoneID = zoneID;
     this->zoneName = zoneName;
     this->thermostatID = thermostatID;
@@ -8,8 +8,9 @@ zoneOutput::zoneOutput(int zoneID, String zoneName, int thermostatID, int rank, 
     this->isCool = isCool;
     this->isPump = isPump;
     this->rank = rank;
+    
     if(isPump){
-        switch(zoneID){
+        switch(zoneNum){
             case 1:
                 this->_pin = ZN1_IN_PIN;
                 break;
@@ -24,7 +25,7 @@ zoneOutput::zoneOutput(int zoneID, String zoneName, int thermostatID, int rank, 
                 break;
         };
     }else{
-        switch(zoneID){
+        switch(zoneNum){
             case 1:
                 this->_pin = ZN1_OUT_PIN;
                 break;
@@ -50,7 +51,7 @@ zoneOutput::zoneOutput(int zoneID, String zoneName, int thermostatID, int rank, 
     isOpen = false;
 }
 
-int zoneOutput::checkTemp(int thermostatID, float currentTemp){
+int zoneOutput::checkTemp(String thermostatID, float currentTemp){
     //RETURN VALUE :
         // 0 = closed port
         // 1 = opened port
@@ -91,7 +92,7 @@ int zoneOutput::checkTemp(int thermostatID, float currentTemp){
     return NO_CHANGE; //otherwise nothing changed
 }
 
-bool zoneOutput::isThermostatIDRelevant(int thermostatID){
+bool zoneOutput::isThermostatIDRelevant(String thermostatID){
     return this->thermostatID == thermostatID; //returns true if relevant, and false otherwise
 }
 

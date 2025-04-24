@@ -1,10 +1,10 @@
 #include "thermostat.h"
 
-thermostat::thermostat(int id, String name, int type){
+thermostat::thermostat(uint8_t thermostatNum, String id, String name, uint8_t type){
     this->id = id;
     this->name = name;
     this->type = type;
-    switch(id){
+    switch(thermostatNum){
         case 1: 
             this->_pin = ZN1_SENSE_PIN;
             break;

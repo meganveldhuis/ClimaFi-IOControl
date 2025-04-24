@@ -6,11 +6,11 @@
 
 class thermostat{
     public:
-        int id;
+        String id;
         String name;
-        int type;
+        uint8_t type;
         
-        thermostat(int id, String name, int type);
+        thermostat(uint8_t thermostatNum, String id, String name, uint8_t type);
         bool isOn();
     private:
         int _pin;

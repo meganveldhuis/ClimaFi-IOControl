@@ -1,33 +1,101 @@
 {
+  "controller": 0,
   "controllerTypes": {
     "ZoneValveController": 0,
     "ZonePumpController": 1,
     "FanCoilController": 2
   },
-  "controller": 2,
+  "thermostatType": {
+    "CLASSIC": 0,
+    "THREE_WIRE": 1,
+    "NETWORKED": 2
+  },
   "components": [
     {
-      "settingType": "thermistorPort",
+      "componentType": "controlledZoneOutputs",
       "data": [
-         {
-          "id": 1,
-          "name": "thermistorName"
+        {
+          "zoneNum": 1,
+          "zoneID": "123456789012345",
+          "zoneName": "livingRoomZoneName",
+          "thermostatID": "1",
+          "rank": 1,
+          "setPoint": 23,
+          "isCool": false
         },
         {
-          "id": 2,
-          "name": "secondThermistorName"
+          "zoneNum": 2,
+          "zoneID": "100000000012346",
+          "zoneName": "bedroomZoneName",
+          "thermostatID": "1",
+          "rank": 2,
+          "setPoint": 25,
+          "isCool": false
+        },
+        {
+          "zoneNum": 3,
+          "zoneID": "100000000012347",
+          "zoneName": "basementZoneName",
+          "thermostatID": "2",
+          "rank": 2,
+          "setPoint": 28,
+          "isCool": false
+        },
+        {
+          "zoneNum": 4,
+          "zoneID": "100000000012348",
+          "zoneName": "topFloorZoneName",
+          "thermostatID": "4",
+          "setPoint": 23,
+          "isCool": true
         }
       ]
     },
     {
-      "settingType": "ADCOutput",
+      "componentType": "zoneEndSwitch"
+    },
+    {
+      "componentType": "Thermostat",
       "data": [
         {
-          "name": "fanCoilName",
+          "thermostatNum": 1,
           "thermostatID": 1,
-          "setPoint": 24
+          "name": "thermostatName",
+          "type": 1
+        },
+        {
+          "thermostatNum": 2,
+          "thermostatID": 2,
+          "name": "thermostatName",
+          "type": 1
+        },
+        {
+          "thermostatNum": 3,
+          "thermostatID": 3,
+          "name": "thermostatName",
+          "type": 1
+        },
+        {
+          "thermostatNum": 4,
+          "thermostatID": 4,
+          "name": "thermostatName",
+          "type": 1
         }
       ]
+    }
+  ],
+  "zonePriority": [
+    {
+      "thermostatID": 1,
+      "numOfRanks": 2
+    },
+    {
+      "thermostatID": 1,
+      "numOfRanks": 4
+    },
+    {
+      "thermostatID": 3,
+      "numOfRanks": 4
     }
   ]
 }

@@ -7,14 +7,14 @@
 class ADCOutput{
     public:
         String name;
-        int thermostatID;
-        int rank;
-        float setPoint;
+        String thermostatID;
+        uint8_t rank;
+        uint16_t setPoint;
         bool isOn;
     
-        ADCOutput(String name, int thermostatID, int rank, float setPoint);
-        void checkTemp(int thermostatID, float currentTemp);
-        bool isThermostatIDRelevant(int thermostatID);
+        ADCOutput(String name, String thermostatID, uint8_t rank, float setPoint);
+        void checkTemp(String thermostatID, float currentTemp);
+        bool isThermostatIDRelevant(String thermostatID);
         void turnOn();
         void turnOff();
         

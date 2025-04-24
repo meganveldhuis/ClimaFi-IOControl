@@ -1,7 +1,7 @@
 #include "thermistorPort.h"
 
 
-thermistorPort::thermistorPort(String name, int number){
+thermistorPort::thermistorPort(String name, uint8_t number){
     this->name = name;
     if(number == 1){
         _pin = THERMISTOR_0_PIN;

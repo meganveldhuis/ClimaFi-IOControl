@@ -8,7 +8,7 @@ class thermistorPort{
     public:
         String name;
     
-        thermistorPort(String name, int number);
+        thermistorPort(String name, uint8_t number);
         float getTemp();
 
     private:

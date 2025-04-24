@@ -1,6 +1,6 @@
 #include "ADCOutput.h"
 
-ADCOutput::ADCOutput(String name, int thermostatID, int rank, float setPoint){
+ADCOutput::ADCOutput(String name, String thermostatID, uint8_t rank, float setPoint){
     this->name = name;
     this->thermostatID = thermostatID;
     this->rank = rank;
@@ -11,7 +11,7 @@ ADCOutput::ADCOutput(String name, int thermostatID, int rank, float setPoint){
     isOn = false;
 }
 
-void ADCOutput::checkTemp(int thermostatID, float currentTemp){
+void ADCOutput::checkTemp(String thermostatID, float currentTemp){
     if(this->thermostatID != thermostatID){
         return;
     }
@@ -23,7 +23,7 @@ void ADCOutput::checkTemp(int thermostatID, float currentTemp){
     return;
 }
 
-bool ADCOutput::isThermostatIDRelevant(int thermostatID){
+bool ADCOutput::isThermostatIDRelevant(String thermostatID){
     return this->thermostatID == thermostatID; //returns true if relevant, and false otherwise
 }
 

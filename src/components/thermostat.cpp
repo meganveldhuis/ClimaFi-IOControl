@@ -31,6 +31,7 @@ bool thermostat::isOn(){
         Serial.println("No pin found. Aborting.");
         return false; //error
     }
+    //TODO : Change to use optocoupler to read the state
     int state = digitalRead(_pin);
     if(state == HIGH){
         return true;

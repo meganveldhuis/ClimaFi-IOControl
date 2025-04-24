@@ -23,7 +23,8 @@ extern std::vector<thermostat> thermostatList;
 
 extern std::unordered_map<int, bool> thermostatStates;
 
-extern endSwitch globalEndSwitch;
+extern endSwitch globalThermostatEndSwitch;
+extern endSwitch globalZoneEndSwitch;
 extern ADCOutput globalADCOutput;
 extern String globalControllerType;
 

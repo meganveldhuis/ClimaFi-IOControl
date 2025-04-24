@@ -7,7 +7,7 @@ std::vector<thermostat> thermostatList;
 
 std::unordered_map<int, bool> thermostatStates;
 
-ADCOutput globalADCOutput("", -1,-1);
+ADCOutput globalADCOutput("", -1, 1, -1);
 endSwitch globalThermostatEndSwitch(true, false);
 endSwitch globalZoneEndSwitch(false, false);
 String globalControllerType = "";
@@ -123,6 +123,7 @@ void createControllerClasses(JsonDocument doc){
                 globalADCOutput = ADCOutput(
                     data[0]["name"].as<String>(),
                     data[0]["thermostatID"].as<int>(),
+                    data[0]["rank"].as<int>(),
                     data[0]["setPoint"].as<float>()
                 );
             }
@@ -158,11 +159,6 @@ void tempUpdated(int thermostatID, float currentTemp){
         bool isAnyOpened = false;
         for (zoneOutput& zone : zoneOutputsList) {
             int response = zone.checkTemp(thermostatID, currentTemp);
-            if(response == 0){ //Closed Port
-                // TODO : broadcast that this zone was opened
-            }else if (response == 1){ //Opened Port
-                // TODO : broadcast that this zone was opened
-            } //else, nothing happened, so do nothing
 
             if(zone.isOpen){
                 isAnyOpened = true;

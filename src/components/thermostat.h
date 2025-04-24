@@ -13,7 +13,7 @@ class thermostat{
         thermostat(uint8_t thermostatNum, String id, String name, uint8_t type);
         bool isOn();
     private:
-        int _pin;
+        uint8_t _pin;
 };
 
 

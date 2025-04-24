@@ -12,7 +12,7 @@ class thermistorPort{
         float getTemp();
 
     private:
-        int _pin;
+        uint8_t _pin;
 
 };
 

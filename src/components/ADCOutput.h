@@ -19,7 +19,7 @@ class ADCOutput{
         void turnOff();
         
     private:
-        int _pin;
+        uint8_t _pin;
 
 };
 

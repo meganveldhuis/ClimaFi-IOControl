@@ -12,7 +12,7 @@ class endSwitch{
         void open();
         void close();
     private:
-        int _pin;
+        uint8_t _pin;
         bool _isOpen;
 
 };

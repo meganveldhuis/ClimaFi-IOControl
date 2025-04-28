@@ -9,8 +9,8 @@ class endSwitch{
         bool isZone;
 
         endSwitch(bool isZone, bool isPump);
-        void open();
-        void close();
+        bool open();
+        bool close();
     private:
         uint8_t _pin;
         bool _isOpen;

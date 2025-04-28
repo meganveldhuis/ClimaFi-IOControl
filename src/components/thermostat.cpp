@@ -19,10 +19,11 @@ thermostat::thermostat(uint8_t thermostatNum, String id, String name, uint8_t ty
             break;
         default:
             this->_pin = 0;
+            Serial.println("ERROR: Invalid thermostatNum");
             break;
     }
     if(_pin != 0){
-        pinMode(_pin, INPUT);
+        pinMode(_pin, INPUT_PULLUP);
     }
 }
 
@@ -31,8 +32,8 @@ bool thermostat::isOn(){
         Serial.println("No pin found. Aborting.");
         return false; //error
     }
-    //TODO : Change to use optocoupler to read the state
-    int state = digitalRead(_pin);
+
+    uint8_t state = digitalRead(_pin);
     if(state == HIGH){
         return true;
     }else if(state == LOW){

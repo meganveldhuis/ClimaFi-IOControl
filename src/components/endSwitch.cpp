@@ -19,20 +19,22 @@ endSwitch::endSwitch(bool isZone, bool isPump){
     _isOpen = false;
 }
 
-void endSwitch::open(){
+bool endSwitch::open(){
     if(!_isOpen){
         digitalWrite(_pin, HIGH);
         _isOpen = true;
         Serial.printf("opened zone end switch on pin %d\n", _pin);
+        return true;
     }
-    return;
+    return false;
 }
 
-void endSwitch::close(){
+bool endSwitch::close(){
     if(_isOpen){
         digitalWrite(_pin, LOW);
         _isOpen = false;
         Serial.printf("closed zone end switch on pin %d\n", _pin);
+        return true;
     }
-    return;
+    return false;
 }

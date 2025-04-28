@@ -9,7 +9,7 @@
 #include "LittleFS.h"
 #include "ArduinoJson.h"
 #include <vector>
-#include <unordered_map>
+#include <map>
 
 #include "components/zoneOutput.h"
 #include "components/endSwitch.h"
@@ -21,7 +21,7 @@ extern std::vector<zoneOutput> zoneOutputsList;
 extern std::vector<thermistorPort> thermistorPortsList;
 extern std::vector<thermostat> thermostatList;
 
-extern std::unordered_map<int, bool> thermostatStates;
+extern std::map<String, bool> thermostatStates;
 
 extern endSwitch globalThermostatEndSwitch;
 extern endSwitch globalZoneEndSwitch;

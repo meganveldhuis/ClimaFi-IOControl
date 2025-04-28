@@ -5,7 +5,7 @@ std::vector<zoneOutput> zoneOutputsList;
 std::vector<thermistorPort> thermistorPortsList;
 std::vector<thermostat> thermostatList;
 
-std::unordered_map<int, bool> thermostatStates;
+std::map<String, bool> thermostatStates;
 
 ADCOutput globalADCOutput("", "", 1, 0);
 endSwitch globalThermostatEndSwitch(true, false);
@@ -177,33 +177,15 @@ void stateChanged(String thermostatID, bool isThermostatOn){
             }
         }
     }else{ // zone valve or pump controller:
-        bool isAnyOpened = false;
-        bool isRequestingHeat = false;
         for (zoneOutput& zone : zoneOutputsList) {
             if(zone.isThermostatIDRelevant(thermostatID)){ //check if thermostatID is relevant
                 if(isThermostatOn){
+                    Serial.printf("Open noticed\n");
                     zone.open();
                 }else{
                     zone.close();
                 }
             }
-            if(zone.isOpen){
-                isAnyOpened = true;
-            }
-        }
-
-        if(isAnyOpened){
-            globalZoneEndSwitch.open();
-        }else{
-            globalZoneEndSwitch.close();
-        }
-
-        if(globalControllerType == "ZonePumpController" && isThermostatOn){
-            globalThermostatEndSwitch.open();
-        }else if(areAllThermostatsOff()){
-            globalThermostatEndSwitch.close();
-        }else{
-            globalThermostatEndSwitch.open();
         }
     }
     return;
@@ -269,7 +251,7 @@ void updateControls(){
     std::vector<zoneOutput> zoneOutputsList;
     std::vector<thermistorPort> thermistorPortsList;
     std::vector<thermostat> thermostatList;
-    std::unordered_map<int, bool> thermostatStates;
+    std::map<String, bool> thermostatStates;
     controlSetup();
     return;
 }

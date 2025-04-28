@@ -116,7 +116,8 @@ void createControllerClasses(JsonDocument doc){
                 for (JsonObject dataItem : data) {
                     thermistorPort thermistor(
                         dataItem["name"].as<String>(),
-                        number
+                        number,
+                        dataItem["id"].as<uint8_t>()
                     );
                     number++;
                     thermistorPortsList.push_back(thermistor);
@@ -275,6 +276,16 @@ float getThermistorTemp(String thermistorName){
     for (thermistorPort& thermistor : thermistorPortsList) {
         if(thermistor.name == thermistorName){
             return thermistor.getTemp();
+        }
+    }
+    Serial.printf("No thermistor with name %s found\n", thermistorName.c_str());
+    return 0;
+}
+
+uint8_t getThermistorIDByName(String thermistorName){
+    for (thermistorPort& thermistor : thermistorPortsList) {
+        if(thermistor.name == thermistorName){
+            return thermistor.id;
         }
     }
     Serial.printf("No thermistor with name %s found\n", thermistorName.c_str());

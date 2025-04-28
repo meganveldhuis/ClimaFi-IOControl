@@ -1,8 +1,9 @@
 #include "thermistorPort.h"
 
 
-thermistorPort::thermistorPort(String name, uint8_t number){
+thermistorPort::thermistorPort(String name, uint8_t number, uint8_t id){
     this->name = name;
+    this->id = id;
     if(number == 1){
         _pin = THERMISTOR_0_PIN;
     }else if(number == 2){
@@ -11,6 +12,7 @@ thermistorPort::thermistorPort(String name, uint8_t number){
         //ERROR
         _pin = 0;
     }
+    pinMode(_pin, INPUT);
 }
 
 float thermistorPort::getTemp(){

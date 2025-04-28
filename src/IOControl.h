@@ -42,6 +42,7 @@ bool isZoneOpen(String zoneID);
 bool isADCOn();
 void stateChanged(String thermostatID, bool isThermostatOn);
 float getThermistorTemp(String thermistorName);
+uint8_t getThermistorIDByName(String thermistorName);
 bool isThermostatOn(String thermostatID);
 bool areAllThermostatsOff();
 int getPortStatus();

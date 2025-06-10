@@ -10,7 +10,6 @@ class AUXRelay{
         String relayName;
         String thermostatID;
         float setPoint;
-        uint8_t rank;
         bool isCool;
         bool isPump;
         bool isReverse;

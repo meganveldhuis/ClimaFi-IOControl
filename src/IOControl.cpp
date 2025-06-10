@@ -84,7 +84,7 @@ void initThermostats(JsonArray data){
     }
 }
 
-void createControllerClasses(JsonDocument doc){
+bool createControllerClasses(JsonDocument doc){
 
     JsonObject controllerTypes = doc["controllerTypes"];
     JsonArray components = doc["components"];
@@ -110,6 +110,7 @@ void createControllerClasses(JsonDocument doc){
                 initThermostats(data);
             }
         }
+        return true;
     } else if (globalControllerType == "ZonePumpController"){
         Serial.println("Pump detected");
         for (JsonObject component : components){
@@ -124,6 +125,7 @@ void createControllerClasses(JsonDocument doc){
                 initThermostats(data);
             }
         }
+        return true;
     } else if (globalControllerType == "FanCoilController"){
         Serial.println("Fan coil detected");
         for (JsonObject component : components){
@@ -149,6 +151,7 @@ void createControllerClasses(JsonDocument doc){
                 );
             }
         }
+        return true;
     } else if (globalControllerType == "HeatPumpController"){
         Serial.println("Heat Pump Controller detected");
         for (JsonObject component : components){
@@ -171,8 +174,10 @@ void createControllerClasses(JsonDocument doc){
                 // TODO: implement
             }
         }
+        return true;
     } else {
         Serial.println("Could not determine controller type");
+        return false;
     }
 }
 
@@ -180,9 +185,10 @@ void createControllerClasses(JsonDocument doc){
 
 // ------------------ Library functions to use in other files ------------------ //
 
-void controlSetup(){
+bool controlSetup(){
     /* 
         @brief Setup the control components based on the settings.json file
+        @return If successful, will return true. if there was an error (opening the settings.json file or detecting the controller type), will return false.
     */
     JsonDocument doc;
     if (!LittleFS.begin()) {
@@ -190,11 +196,12 @@ void controlSetup(){
         formatLittleFS();
         if (!LittleFS.begin()) {
             Serial.println("Failed to mount LittleFS after formatting");
-            return;
+            return false;
         }
     }
     doc = readData(LittleFS, "/settings.json");
-    createControllerClasses(doc);
+    bool created = createControllerClasses(doc);
+    return created;
 }
 
 void updateControls(){
@@ -267,7 +274,7 @@ void stateChanged(String thermostatID, bool isThermostatOn){
 
 
 
-bool updateSetPoint(float newSetPoint, String zoneID, String fanCoilName = ""){
+bool updateSetPoint(float newSetPoint, String zoneID, String fanCoilName){
     /* 
         @brief Update the set point of a component
         @param newSetPoint The desired set point to update to

@@ -38,9 +38,9 @@ JsonDocument readData(fs::FS &fs, const char * path);
 void initZoneOutputs(JsonArray data);
 void initAuxRelays(JsonArray data);
 void initThermostats(JsonArray data);
-void createControllerClasses(JsonDocument doc);
+bool createControllerClasses(JsonDocument doc);
 
-void controlSetup();
+bool controlSetup();
 void updateControls();
 
 void tempUpdated(String thermostatID, float currentTemp);

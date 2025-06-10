@@ -3,7 +3,8 @@
   "controllerTypes": {
     "ZoneValveController": 0,
     "ZonePumpController": 1,
-    "FanCoilController": 2
+    "FanCoilController": 2,
+    "HeatPumpController": 3
   },
   "thermostatType": {
     "CLASSIC": 0,

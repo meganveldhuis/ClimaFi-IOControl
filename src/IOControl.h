@@ -16,8 +16,10 @@
 #include "components/ADCOutput.h"
 #include "components/thermistorPort.h"
 #include "components/thermostat.h"
+#include "components/AUXRelay.h"
 
 extern std::vector<zoneOutput> zoneOutputsList;
+extern std::vector<AUXRelay> AUXRelaysList;
 extern std::vector<thermistorPort> thermistorPortsList;
 extern std::vector<thermostat> thermostatList;
 
@@ -30,7 +32,8 @@ extern String globalControllerType;
 
 void controlSetup();
 JsonDocument readData(fs::FS &fs, const char * path);
-void initZoneOutputs(JsonArray data, bool isPump);
+void initZoneOutputs(JsonArray data);
+void initAuxRelays(JsonArray data);
 void createControllerClasses(JsonDocument doc);
 void formatLittleFS();
 void tempUpdated(String thermostatID, float currentTemp);

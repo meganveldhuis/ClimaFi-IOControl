@@ -2,6 +2,7 @@
 
 // Define and initialize global components
 std::vector<zoneOutput> zoneOutputsList;
+std::vector<AUXRelay> AUXRelaysList;
 std::vector<thermistorPort> thermistorPortsList;
 std::vector<thermostat> thermostatList;
 
@@ -38,7 +39,7 @@ JsonDocument readData(fs::FS &fs, const char * path){
 }
 
 
-void initZoneOutputs(JsonArray data, bool isPump){
+void initZoneOutputs(JsonArray data){
     for (JsonObject dataItem : data) {
         zoneOutput zone(
             dataItem["zoneNum"].as<uint8_t>(), //this is the "zone number" as displayed on the PCB
@@ -48,9 +49,24 @@ void initZoneOutputs(JsonArray data, bool isPump){
             dataItem["rank"].as<uint8_t>(),
             dataItem["setPoint"].as<float>(), 
             dataItem["isCool"].as<bool>(),
-            isPump
+            globalControllerType
         );
         zoneOutputsList.push_back(zone);
+    }
+}
+
+void initAuxRelays(JsonArray data){
+    for (JsonObject dataItem : data) {
+        AUXRelay relay(
+            dataItem["relayNum"].as<uint8_t>(),
+            dataItem["relayName"].as<String>(),
+            dataItem["thermostatID"].as<String>(), 
+            dataItem["setPoint"].as<float>(), 
+            dataItem["isCool"].as<bool>(),
+            dataItem["isPump"].as<bool>(),
+            dataItem["isReverse"].as<bool>()
+        );
+        AUXRelaysList.push_back(relay);
     }
 }
 
@@ -59,8 +75,9 @@ void initThermostats(JsonArray data){
         thermostat thermostatInstance(
             dataItem["thermostatNum"].as<uint8_t>(),
             dataItem["thermostatID"].as<String>(),
-            dataItem["name"].as<String>(), 
-            dataItem["type"].as<uint8_t>()
+            dataItem["name"].as<String>(),
+            dataItem["type"].as<uint8_t>(),
+            globalControllerType
         );
         thermostatList.push_back(thermostatInstance);
     }
@@ -82,7 +99,7 @@ void createControllerClasses(JsonDocument doc){
         for (JsonObject component : components){
             if(component["componentType"] == "controlledZoneOutputs"){
                 JsonArray data = component["data"];
-                initZoneOutputs(data, false);
+                initZoneOutputs(data);
             } else if(component["componentType"] == "zoneEndSwitch"){
                 globalZoneEndSwitch = endSwitch(true, false);
             // } else if(component["componentType"] == "thermostatEndSwitch"){
@@ -97,7 +114,7 @@ void createControllerClasses(JsonDocument doc){
         for (JsonObject component : components){
             JsonArray data = component["data"];
             if(component["componentType"] == "controlledZoneOutputs"){
-                initZoneOutputs(data, true);
+                initZoneOutputs(data);
             } else if(component["componentType"] == "zoneEndSwitch"){
                 globalZoneEndSwitch = endSwitch(true, true);
             } else if(component["componentType"] == "thermostatEndSwitch"){
@@ -129,6 +146,30 @@ void createControllerClasses(JsonDocument doc){
                     data[0]["rank"].as<uint8_t>(),
                     data[0]["setPoint"].as<float>()
                 );
+            }
+        }
+    } else if (globalControllerType == "HeatPumpController"){
+        Serial.println("Heat Pump Controller detected");
+        for (JsonObject component : components){
+            JsonArray data = component["data"];
+            if(component["componentType"] == "relay"){
+                // Aux relay (x 4)
+                // Rev Valve relay (x 1)
+            } else if(component["componentType"] == "stagingOutputs"){
+                // heat pump outputs ( x 4)
+            } else if(component["componentType"] == "ADCOutput"){
+                globalADCOutput = ADCOutput(
+                    data[0]["name"].as<String>(),
+                    data[0]["thermostatID"].as<String>(),
+                    data[0]["rank"].as<uint8_t>(),
+                    data[0]["setPoint"].as<float>()
+                );
+            // } else if(component["componentType"] == "thermostat"){
+            //     JsonArray data = component["data"];
+            //     initThermostats(data);
+            // } else if(component["componentType"] == "demands"){
+            //     JsonArray data = component["data"];
+            //     initThermostats(data);
             }
         }
     } else {

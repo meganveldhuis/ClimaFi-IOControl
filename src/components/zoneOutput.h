@@ -15,13 +15,13 @@ class zoneOutput{
         String zoneID;
         String zoneName;
         String thermostatID;
-        int16_t setPoint;
+        float setPoint;
         bool isCool;
         bool isPump;
         bool isOpen;
         uint8_t rank;
         
-        zoneOutput(uint8_t zoneNum, String zoneID, String zoneName, String thermostatID, uint8_t rank, float setPoint, bool isCool, bool isPump);
+        zoneOutput(uint8_t zoneNum, String zoneID, String zoneName, String thermostatID, uint8_t rank, float setPoint, bool isCool, String controllerType);
         int checkTemp(String thermostatID, float currentTemp);
         bool isThermostatIDRelevant(String thermostatID);
         void open();

@@ -8,7 +8,7 @@ std::vector<thermostat> thermostatList;
 
 std::map<String, bool> thermostatStates;
 
-ADCOutput globalADCOutput("", "", 1, 0);
+ADCOutput globalADCOutput("", "", 1, 0, "");
 endSwitch globalThermostatEndSwitch(true, false);
 endSwitch globalZoneEndSwitch(false, false);
 String globalControllerType = "";
@@ -60,7 +60,8 @@ void initAuxRelays(JsonArray data){
         AUXRelay relay(
             dataItem["relayNum"].as<uint8_t>(),
             dataItem["relayName"].as<String>(),
-            dataItem["thermostatID"].as<String>(), 
+            dataItem["thermostatID"].as<String>(),
+            dataItem["rank"].as<uint8_t>(),
             dataItem["setPoint"].as<float>(), 
             dataItem["isCool"].as<bool>(),
             dataItem["isPump"].as<bool>(),
@@ -120,7 +121,6 @@ void createControllerClasses(JsonDocument doc){
             } else if(component["componentType"] == "thermostatEndSwitch"){
                 globalThermostatEndSwitch = endSwitch(false, true);
             } else if(component["componentType"] == "thermostat"){
-                JsonArray data = component["data"];
                 initThermostats(data);
             }
         }
@@ -144,7 +144,8 @@ void createControllerClasses(JsonDocument doc){
                     data[0]["name"].as<String>(),
                     data[0]["thermostatID"].as<String>(),
                     data[0]["rank"].as<uint8_t>(),
-                    data[0]["setPoint"].as<float>()
+                    data[0]["setPoint"].as<float>(),
+                    globalControllerType
                 );
             }
         }
@@ -152,24 +153,22 @@ void createControllerClasses(JsonDocument doc){
         Serial.println("Heat Pump Controller detected");
         for (JsonObject component : components){
             JsonArray data = component["data"];
-            if(component["componentType"] == "relay"){
-                // Aux relay (x 4)
-                // Rev Valve relay (x 1)
-            } else if(component["componentType"] == "stagingOutputs"){
-                // heat pump outputs ( x 4)
-            } else if(component["componentType"] == "ADCOutput"){
+            if(component["componentType"] == "relay"){ // Aux relay (x 4) + Rev Valve relay (x 1)
+                initAuxRelays(data);
+            } else if(component["componentType"] == "stagingOutputs"){ // heat pump outputs ( x 4)
+                // TODO: implement
+            } else if(component["componentType"] == "ADCOutput"){ // Fan coil
                 globalADCOutput = ADCOutput(
                     data[0]["name"].as<String>(),
                     data[0]["thermostatID"].as<String>(),
                     data[0]["rank"].as<uint8_t>(),
-                    data[0]["setPoint"].as<float>()
+                    data[0]["setPoint"].as<float>(),
+                    globalControllerType
                 );
-            // } else if(component["componentType"] == "thermostat"){
-            //     JsonArray data = component["data"];
-            //     initThermostats(data);
-            // } else if(component["componentType"] == "demands"){
-            //     JsonArray data = component["data"];
-            //     initThermostats(data);
+            } else if(component["componentType"] == "demandSignals"){ // thermostat demands
+                initThermostats(data);
+            } else if(component["componentType"] == "thermistor"){ // thermistors (x 8)
+                // TODO: implement
             }
         }
     } else {

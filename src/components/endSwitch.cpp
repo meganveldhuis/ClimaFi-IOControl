@@ -23,7 +23,7 @@ bool endSwitch::open(){
     if(!_isOpen){
         digitalWrite(_pin, HIGH);
         _isOpen = true;
-        Serial.printf("opened zone end switch on pin %d\n", _pin);
+        Serial.printf("opened end switch on pin %d\n", _pin);
         return true;
     }
     return false;
@@ -33,7 +33,7 @@ bool endSwitch::close(){
     if(_isOpen){
         digitalWrite(_pin, LOW);
         _isOpen = false;
-        Serial.printf("closed zone end switch on pin %d\n", _pin);
+        Serial.printf("closed end switch on pin %d\n", _pin);
         return true;
     }
     return false;

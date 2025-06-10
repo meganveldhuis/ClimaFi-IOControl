@@ -1,11 +1,16 @@
 #include "ADCOutput.h"
 
-ADCOutput::ADCOutput(String name, String thermostatID, uint8_t rank, float setPoint){
+ADCOutput::ADCOutput(String name, String thermostatID, uint8_t rank, float setPoint, String controllerType){
     this->name = name;
     this->thermostatID = thermostatID;
     this->rank = rank;
     this->setPoint = setPoint;
-    this->_pin = COIL_PWM_PIN;
+    if(controllerType == "HeatPumpController"){
+        this->_pin = COIL_PWM_HPC_PIN;
+    }else{
+        this->_pin = COIL_PWM_PIN;
+    }
+    
     pinMode(_pin, OUTPUT);
     analogWrite(_pin, LOW);
     isOn = false;

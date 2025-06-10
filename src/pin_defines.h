@@ -53,4 +53,6 @@
 #define STG3_IN_PIN 6
 #define STG4_IN_PIN 7
 
+#define COIL_PWM_HPC_PIN 38
+
 #endif

@@ -10,6 +10,7 @@ class AUXRelay{
         String relayName;
         String thermostatID;
         float setPoint;
+        uint8_t rank;
         bool isCool;
         bool isPump;
         bool isReverse;
@@ -17,7 +18,7 @@ class AUXRelay{
         bool isOpen;
         uint8_t rank;
         
-        AUXRelay(uint8_t relayNum, String relayName, String thermostatID, float setPoint, bool isCool, bool isPump, bool isReverse);
+        AUXRelay(uint8_t relayNum, String relayName, String thermostatID, uint8_t rank, float setPoint, bool isCool, bool isPump, bool isReverse);
         void checkTemp(String thermostatID, float currentTemp);
         bool isThermostatIDRelevant(String thermostatID);
         void open();

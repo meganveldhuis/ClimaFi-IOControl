@@ -1,9 +1,10 @@
 #include "AUXRelay.h"
 
-AUXRelay::AUXRelay(uint8_t relayNum, String relayName, String thermostatID, float setPoint, bool isCool, bool isPump, bool isReverse){
+AUXRelay::AUXRelay(uint8_t relayNum, String relayName, String thermostatID, uint8_t rank, float setPoint, bool isCool, bool isPump, bool isReverse){
     this->relayNum = relayNum;
     this->relayName = relayName;
     this->thermostatID = thermostatID;
+    this->rank = rank;
     this->setPoint = setPoint;
     this->isCool = isCool;
     this->isPump = isPump;

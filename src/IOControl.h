@@ -30,24 +30,33 @@ extern endSwitch globalZoneEndSwitch;
 extern ADCOutput globalADCOutput;
 extern String globalControllerType;
 
-void controlSetup();
+void formatLittleFS();
+
 JsonDocument readData(fs::FS &fs, const char * path);
+
+
 void initZoneOutputs(JsonArray data);
 void initAuxRelays(JsonArray data);
+void initThermostats(JsonArray data);
 void createControllerClasses(JsonDocument doc);
-void formatLittleFS();
-void tempUpdated(String thermostatID, float currentTemp);
-bool updateSetPoint(float newSetPoint, String zoneID, String fanCoilName);
 
-
+void controlSetup();
 void updateControls();
+
+void tempUpdated(String thermostatID, float currentTemp);
+void stateChanged(String thermostatID, bool isThermostatOn);
+
+
+bool updateSetPoint(float newSetPoint, String zoneID, String fanCoilName="");
+
 bool isZoneOpen(String zoneID);
 bool isADCOn();
-void stateChanged(String thermostatID, bool isThermostatOn);
+
+bool areAllThermostatsOff();
 float getThermistorTemp(String thermistorName);
 uint8_t getThermistorIDByName(String thermistorName);
 bool isThermostatOn(String thermostatID);
-bool areAllThermostatsOff();
-int getPortStatus();
+
+uint16_t getPortStatus();
 
 #endif

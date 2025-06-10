@@ -181,6 +181,9 @@ void createControllerClasses(JsonDocument doc){
 // ------------------ Library functions to use in other files ------------------ //
 
 void controlSetup(){
+    /* 
+        @brief Setup the control components based on the settings.json file
+    */
     JsonDocument doc;
     if (!LittleFS.begin()) {
         Serial.println("An Error has occurred while mounting LittleFS. Formatting and trying again");
@@ -194,8 +197,33 @@ void controlSetup(){
     createControllerClasses(doc);
 }
 
-void tempUpdated(String thermostatID, float currentTemp){
+void updateControls(){
+    /* 
+        @brief Update the saved control components from the settings.json file
+    */
+    //reset all globals
+    std::vector<zoneOutput> zoneOutputsList;
+    std::vector<AUXRelay> AUXRelaysList;
+    std::vector<thermistorPort> thermistorPortsList;
+    std::vector<thermostat> thermostatList;
+    std::map<String, bool> thermostatStates;
 
+    ADCOutput globalADCOutput("", "", 1, 0, "");
+    endSwitch globalThermostatEndSwitch(true, false);
+    endSwitch globalZoneEndSwitch(false, false);
+    String globalControllerType = "";
+
+    // Call setup again
+    controlSetup();
+    return;
+}
+
+void tempUpdated(String thermostatID, float currentTemp){
+    /* 
+        @brief Call when a thermostat has a new temperature measured. This function will, for each zoneOutput, check if the thermostat ID is relevant and will open/close based on the saved set point. 
+        @param thermostatID The ID of the thermostat
+        @param currentTemp The measured temperature
+    */
     if(globalControllerType == "FanCoilController"){
         globalADCOutput.checkTemp(thermostatID, currentTemp);
     }else{ // zone valve or pump controller:
@@ -208,6 +236,11 @@ void tempUpdated(String thermostatID, float currentTemp){
 }
 
 void stateChanged(String thermostatID, bool isThermostatOn){
+    /* 
+        @brief To be called when a wired thermostat state has changed. This will open/close any zone output that has the relevant thermostatID, or open/close the fan coil if it has the relevant thermostatID
+        @param thermostatID The ID of the thermostat whose state was changed
+        @param isThermostatOn A boolean representing the (changed) state of the thermostat
+    */
     // call when the wired thermostat states have changed
     if(globalControllerType == "FanCoilController"){
         if(globalADCOutput.isThermostatIDRelevant(thermostatID)){ // check if thermostat ID is relevant
@@ -232,16 +265,16 @@ void stateChanged(String thermostatID, bool isThermostatOn){
     return;
 }
 
-bool areAllThermostatsOff() {
-    for (auto it = thermostatStates.begin(); it != thermostatStates.end(); ++it) {
-        if (it->second) { // Check the value (isOn)
-            return false; // At least one thermostat is on
-        }
-    }
-    return true; // All thermostats are off
-}
 
-bool updateSetPoint(float newSetPoint, String zoneID, String fanCoilName){
+
+bool updateSetPoint(float newSetPoint, String zoneID, String fanCoilName = ""){
+    /* 
+        @brief Update the set point of a component
+        @param newSetPoint The desired set point to update to
+        @param zoneID The ID of the zone outputs that a change is requested (valves/pumps)
+        @param fanCoilName The name of the Fan Coil that a change is requested (optional)
+        @return A boolean if the function worked and if set point was successfully updated
+    */
 
     // update settings.json - but this will have to rewrite the entire file
     JsonDocument backupDocument = readData(LittleFS, "/settings.json");
@@ -287,17 +320,12 @@ bool updateSetPoint(float newSetPoint, String zoneID, String fanCoilName){
     return true;
 }
 
-void updateControls(){
-    //reset globals
-    std::vector<zoneOutput> zoneOutputsList;
-    std::vector<thermistorPort> thermistorPortsList;
-    std::vector<thermostat> thermostatList;
-    std::map<String, bool> thermostatStates;
-    controlSetup();
-    return;
-}
-
 bool isZoneOpen(String zoneID){
+    /* 
+        @brief Check status of the zone output (valve or pump)
+        @param zoneID The ID of the zone
+        @return The status (true if open, false if closed) of the valve/pump
+    */
     for (zoneOutput& zone : zoneOutputsList) {
         if(zone.zoneID == zoneID){
             return zone.isOpen;
@@ -307,12 +335,33 @@ bool isZoneOpen(String zoneID){
     return false;
 }
 
-
 bool isADCOn(){
+    /* 
+        @brief Checks if the ADC Output (Fan Coil) is on.
+        @return boolean if the ADC Output is on (true if on, false if off)
+    */
     return globalADCOutput.isOn;
 }
 
+bool areAllThermostatsOff() {
+    /* 
+        @brief Check if all thermostats are off. 
+        @return true if all thermostats are off, and false if any (at least one) are on
+    */
+    for (auto it = thermostatStates.begin(); it != thermostatStates.end(); ++it) {
+        if (it->second) { // Check the value (isOn)
+            return false; // At least one thermostat is on
+        }
+    }
+    return true; // All thermostats are off
+}
+
 float getThermistorTemp(String thermistorName){
+    /* 
+        @brief Get the temperature from an inputted thermistor
+        @param thermistorName The name of the thermistor
+        @return The temperature read from the given thermistor
+    */
     for (thermistorPort& thermistor : thermistorPortsList) {
         if(thermistor.name == thermistorName){
             return thermistor.getTemp();
@@ -323,6 +372,11 @@ float getThermistorTemp(String thermistorName){
 }
 
 uint8_t getThermistorIDByName(String thermistorName){
+    /* 
+        @brief Get the thermistor's ID by its name
+        @param thermistorName The name of the thermistor
+        @return The thermistor ID of the given thermistor
+    */
     for (thermistorPort& thermistor : thermistorPortsList) {
         if(thermistor.name == thermistorName){
             return thermistor.id;
@@ -333,6 +387,11 @@ uint8_t getThermistorIDByName(String thermistorName){
 }
 
 bool isThermostatOn(String thermostatID){
+    /* 
+        @brief Check status of thermostat
+        @param thermostatID The thermostatID of the desired thermostat
+        @return the status (bool) of the wired thermostat - true is On, false is Off
+    */
     // check state of (wired) thermostat : is it on or off
     for (thermostat& thermostat : thermostatList) {
         if (thermostat.id == thermostatID) {
@@ -343,13 +402,17 @@ bool isThermostatOn(String thermostatID){
     return false;
 }
 
-int getPortStatus(){
-    int status = 0b0;
+uint16_t getPortStatus(){
+    /*
+        @brief Get the status of output ports. If it's a FanCoilController, it will return the status of the fan coil. If it is a ZoneValveController or ZonePumpController, this will return the status of the valves or pumps as a buffer
+        @return If FanCoilController, returns the ADCOutput status. Else, returns the status for all the Zone Outputs as a buffer
+    */
+    uint16_t status = 0b0;
     if(globalControllerType == "FanCoilController"){
         status = globalADCOutput.isOn ? 0b1 : 0b0;
         return status;
     }else{
-        int bitPosition = 0; // Track the bit position for each zone
+        uint16_t bitPosition = 0; // Track the bit position for each zone
         for (zoneOutput& zone : zoneOutputsList) {
             bool thisStatus = zone.isOpen;
             if (thisStatus) {

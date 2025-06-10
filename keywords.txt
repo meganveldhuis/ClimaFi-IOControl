@@ -7,20 +7,27 @@
 #######################################
 
 ADCOutput	KEYWORD1
+AUXRelay	KEYWORD1
 endSwitch	KEYWORD1
 thermistorPort	KEYWORD1
+thermostat	KEYWORD1
 zoneOutput	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 controlSetup	KEYWORD2
-tempUpdated     KEYWORD2
-updateSetPoint	KEYWORD2
 updateControls	KEYWORD2
+tempUpdated     KEYWORD2
+stateChanged	KEYWORD2
+updateSetPoint	KEYWORD2
 isZoneOpen	KEYWORD2
 isADCOn	KEYWORD2
+areAllThermostatsOff	KEYWORD2
 getThermistorTemp	KEYWORD2
+getThermistorIDByName	KEYWORD2
+isThermostatOn	KEYWORD2
+getPortStatus	KEYWORD2
 
 ######################################
 # Constants (LITERAL1)

@@ -49,6 +49,7 @@ void initZoneOutputs(JsonArray data){
             dataItem["rank"].as<uint8_t>(),
             dataItem["setPoint"].as<float>(), 
             dataItem["isCool"].as<bool>(),
+            dataItem["isPump"].as<bool>(),
             globalControllerType
         );
         zoneOutputsList.push_back(zone);
@@ -159,7 +160,7 @@ bool createControllerClasses(JsonDocument doc){
             if(component["componentType"] == "relay"){ // Aux relay (x 4) + Rev Valve relay (x 1)
                 initAuxRelays(data);
             } else if(component["componentType"] == "stagingOutputs"){ // heat pump outputs ( x 4)
-                // TODO: implement
+                initZoneOutputs(data);
             } else if(component["componentType"] == "ADCOutput"){ // Fan coil
                 globalADCOutput = ADCOutput(
                     data[0]["name"].as<String>(),

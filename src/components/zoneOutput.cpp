@@ -1,6 +1,6 @@
 #include "zoneOutput.h"
 
-zoneOutput::zoneOutput(uint8_t zoneNum, String zoneID, String zoneName, String thermostatID, uint8_t rank, float setPoint, bool isCool, String controllerType){
+zoneOutput::zoneOutput(uint8_t zoneNum, String zoneID, String zoneName, String thermostatID, uint8_t rank, float setPoint, bool isCool, bool isPump, String controllerType){
     this->zoneID = zoneID;
     this->zoneName = zoneName;
     this->thermostatID = thermostatID;
@@ -23,6 +23,25 @@ zoneOutput::zoneOutput(uint8_t zoneNum, String zoneID, String zoneName, String t
                 break;
             default:
                 this->_pin = 0;
+                break;
+        };
+    }else if(controllerType == "HeatPumpController") {
+        this->isPump = isPump;
+        switch(zoneNum){
+            case 1:
+                this->_pin = STG1_IN_PIN;
+                break;
+            case 2:
+                this->_pin = STG2_IN_PIN;
+                break;
+            case 3:
+                this->_pin = STG3_IN_PIN;
+                break;
+            case 4:
+                this->_pin = STG4_IN_PIN;
+                break;
+            default:
+                this->_pin = 0; //indicate error
                 break;
         };
     } else { // ZoneValveController

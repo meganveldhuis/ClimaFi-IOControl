@@ -1,5 +1,5 @@
-#ifndef ZONEOUTPUT_H
-#define ZONEOUTPUT_H
+#ifndef STAGINGOUTPUT_H
+#define STAGINGOUTPUT_H
 
 #include "ArduinoJson.h"
 #include "LittleFS.h"
@@ -10,18 +10,17 @@
 #define OPENED_PORT 1
 #define NO_CHANGE 9
 
-class zoneOutput{
+class stageOutput{
     public:
-        String zoneID;
-        String zoneName;
+        String stageName;
         String thermostatID;
         float setPoint;
         bool isCool;
         bool isPump;
         bool isOpen;
         uint8_t rank;
-        
-        zoneOutput(uint8_t zoneNum, String zoneID, String zoneName, String thermostatID, uint8_t rank, float setPoint, bool isCool, bool isPump, String controllerType);
+
+        stageOutput(uint8_t stageNum, String stageName, String thermostatID, uint8_t rank, float setPoint, bool isCool, bool isPump);
         uint8_t checkTemp(String thermostatID, float currentTemp);
         bool isThermostatIDRelevant(String thermostatID);
         void open();
@@ -29,8 +28,7 @@ class zoneOutput{
 
     private:
         uint8_t _pin;
-        
-        
+
 };
 
 

@@ -12,6 +12,7 @@
 #include <map>
 
 #include "components/zoneOutput.h"
+#include "components/stageOutput.h"
 #include "components/endSwitch.h"
 #include "components/ADCOutput.h"
 #include "components/thermistorPort.h"
@@ -19,6 +20,7 @@
 #include "components/AUXRelay.h"
 
 extern std::vector<zoneOutput> zoneOutputsList;
+extern std::vector<stageOutput> stageOutputsList;
 extern std::vector<AUXRelay> AUXRelaysList;
 extern std::vector<thermistorPort> thermistorPortsList;
 extern std::vector<thermostat> thermostatList;
@@ -36,6 +38,7 @@ JsonDocument readData(fs::FS &fs, const char * path);
 
 
 void initZoneOutputs(JsonArray data);
+void initStageOutputs(JsonArray data);
 void initAuxRelays(JsonArray data);
 void initThermostats(JsonArray data);
 bool createControllerClasses(JsonDocument doc);

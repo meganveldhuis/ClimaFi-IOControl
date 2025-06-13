@@ -2,6 +2,7 @@
 
 // Define and initialize global components
 std::vector<zoneOutput> zoneOutputsList;
+std::vector<stageOutput> stageOutputsList;
 std::vector<AUXRelay> AUXRelaysList;
 std::vector<thermistorPort> thermistorPortsList;
 std::vector<thermostat> thermostatList;
@@ -53,6 +54,21 @@ void initZoneOutputs(JsonArray data){
             globalControllerType
         );
         zoneOutputsList.push_back(zone);
+    }
+}
+
+void initStageOutputs(JsonArray data){
+    for (JsonObject dataItem : data) {
+        stageOutput stage(
+            dataItem["stageNum"].as<uint8_t>(),
+            dataItem["stageName"].as<String>(),
+            dataItem["thermostatID"].as<String>(),
+            dataItem["rank"].as<uint8_t>(),
+            dataItem["setPoint"].as<float>(),
+            dataItem["isCool"].as<bool>(),
+            dataItem["isPump"].as<bool>()
+        );
+        stageOutputsList.push_back(stage);
     }
 }
 
@@ -159,8 +175,8 @@ bool createControllerClasses(JsonDocument doc){
             JsonArray data = component["data"];
             if(component["componentType"] == "relay"){ // Aux relay (x 4) + Rev Valve relay (x 1)
                 initAuxRelays(data);
-            } else if(component["componentType"] == "stagingOutputs"){ // heat pump outputs ( x 4)
-                initZoneOutputs(data);
+            } else if(component["componentType"] == "stagingOutputs"){ // Stage Outputs / Heat pumps/valves ( x 4)
+                initStageOutputs(data);
             } else if(component["componentType"] == "ADCOutput"){ // Fan coil
                 globalADCOutput = ADCOutput(
                     data[0]["name"].as<String>(),
@@ -211,6 +227,7 @@ void updateControls(){
     */
     //reset all globals
     std::vector<zoneOutput> zoneOutputsList;
+    std::vector<stageOutput> stageOutputsList;
     std::vector<AUXRelay> AUXRelaysList;
     std::vector<thermistorPort> thermistorPortsList;
     std::vector<thermostat> thermostatList;
@@ -258,11 +275,21 @@ void stateChanged(String thermostatID, bool isThermostatOn){
                 globalADCOutput.turnOff();
             }
         }
+    else if(globalControllerType == "HeatPumpController"){
+        for (stageOutput& stage : stageOutputsList) {
+            if(stage.isThermostatIDRelevant(thermostatID)){ //check if thermostatID is relevant
+                if(isThermostatOn){
+                    stage.open();
+                }else{
+                    stage.close();
+                }
+            }
+        }
+    }
     }else{ // zone valve or pump controller:
         for (zoneOutput& zone : zoneOutputsList) {
             if(zone.isThermostatIDRelevant(thermostatID)){ //check if thermostatID is relevant
                 if(isThermostatOn){
-                    Serial.printf("Open noticed\n");
                     zone.open();
                 }else{
                     zone.close();

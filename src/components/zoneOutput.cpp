@@ -72,7 +72,7 @@ zoneOutput::zoneOutput(uint8_t zoneNum, String zoneID, String zoneName, String t
     isOpen = false;
 }
 
-int zoneOutput::checkTemp(String thermostatID, float currentTemp){
+uint8_t zoneOutput::checkTemp(String thermostatID, float currentTemp){
     //RETURN VALUE :
         // 0 = closed port
         // 1 = opened port

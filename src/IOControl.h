@@ -22,7 +22,7 @@
 extern std::vector<zoneOutput> zoneOutputsList;
 extern std::vector<stageOutput> stageOutputsList;
 extern std::vector<AUXRelay> AUXRelaysList;
-extern std::vector<thermistorPort> thermistorPortsList;
+extern std::vector<thermistorPort*> thermistorPortsList;
 extern std::vector<thermostat> thermostatList;
 
 extern std::map<String, bool> thermostatStates;

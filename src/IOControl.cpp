@@ -4,7 +4,7 @@
 std::vector<zoneOutput> zoneOutputsList;
 std::vector<stageOutput> stageOutputsList;
 std::vector<AUXRelay> AUXRelaysList;
-std::vector<thermistorPort> thermistorPortsList;
+std::vector<thermistorPort*> thermistorPortsList; //need to use a pointer in order for Polymorphism to work (and have an ADCThermistor object inside the vector)
 std::vector<thermostat> thermostatList;
 
 std::map<String, bool> thermostatStates;
@@ -150,13 +150,16 @@ bool createControllerClasses(JsonDocument doc){
             if(component["componentType"] == "thermistorPort"){
                 int number = 1;
                 for (JsonObject dataItem : data) {
-                    thermistorPort thermistor(
-                        dataItem["name"].as<String>(),
+                    // thermistorPort thermistor(
+                    //     dataItem["name"].as<String>(),
+                    //     number,
+                    //     dataItem["id"].as<uint8_t>()
+                    // );
+                    thermistorPortsList.push_back(new thermistorPort(dataItem["name"].as<String>(),
                         number,
-                        dataItem["id"].as<uint8_t>()
+                        dataItem["id"].as<uint8_t>())
                     );
                     number++;
-                    thermistorPortsList.push_back(thermistor);
                 }
             } else if(component["componentType"] == "ADCOutput"){
                 globalADCOutput = ADCOutput(
@@ -188,7 +191,15 @@ bool createControllerClasses(JsonDocument doc){
             } else if(component["componentType"] == "demandSignals"){ // thermostat demands
                 initThermostats(data);
             } else if(component["componentType"] == "thermistor"){ // thermistors (x 8)
-                // TODO: implement
+                int number = 1;
+                for (JsonObject dataItem : data) {
+                    thermistorPortsList.push_back(new ADCThermistor(
+                        dataItem["name"].as<String>(),
+                        number,
+                        dataItem["id"].as<uint8_t>())
+                    );
+                    number++;
+                }
             }
         }
         return true;
@@ -226,12 +237,16 @@ void updateControls(){
         @brief Update the saved control components from the settings.json file
     */
     //reset all globals
-    std::vector<zoneOutput> zoneOutputsList;
-    std::vector<stageOutput> stageOutputsList;
-    std::vector<AUXRelay> AUXRelaysList;
-    std::vector<thermistorPort> thermistorPortsList;
-    std::vector<thermostat> thermostatList;
-    std::map<String, bool> thermostatStates;
+    for (auto thermistor : thermistorPortsList) {
+        delete thermistor;
+    }
+    thermistorPortsList.clear();
+
+    zoneOutputsList.clear();
+    stageOutputsList.clear();
+    AUXRelaysList.clear();
+    thermostatList.clear();
+    thermostatStates.clear();
 
     ADCOutput globalADCOutput("", "", 1, 0, "");
     endSwitch globalThermostatEndSwitch(true, false);
@@ -275,7 +290,7 @@ void stateChanged(String thermostatID, bool isThermostatOn){
                 globalADCOutput.turnOff();
             }
         }
-    else if(globalControllerType == "HeatPumpController"){
+    } else if(globalControllerType == "HeatPumpController"){
         for (stageOutput& stage : stageOutputsList) {
             if(stage.isThermostatIDRelevant(thermostatID)){ //check if thermostatID is relevant
                 if(isThermostatOn){
@@ -285,8 +300,7 @@ void stateChanged(String thermostatID, bool isThermostatOn){
                 }
             }
         }
-    }
-    }else{ // zone valve or pump controller:
+    } else{ // zone valve or pump controller:
         for (zoneOutput& zone : zoneOutputsList) {
             if(zone.isThermostatIDRelevant(thermostatID)){ //check if thermostatID is relevant
                 if(isThermostatOn){
@@ -397,9 +411,9 @@ float getThermistorTemp(String thermistorName){
         @param thermistorName The name of the thermistor
         @return The temperature read from the given thermistor
     */
-    for (thermistorPort& thermistor : thermistorPortsList) {
-        if(thermistor.name == thermistorName){
-            return thermistor.getTemp();
+    for (auto thermistor : thermistorPortsList) {
+        if(thermistor->name == thermistorName){
+            return thermistor->getTemp();
         }
     }
     Serial.printf("No thermistor with name %s found\n", thermistorName.c_str());
@@ -412,9 +426,9 @@ uint8_t getThermistorIDByName(String thermistorName){
         @param thermistorName The name of the thermistor
         @return The thermistor ID of the given thermistor
     */
-    for (thermistorPort& thermistor : thermistorPortsList) {
-        if(thermistor.name == thermistorName){
-            return thermistor.id;
+    for (auto thermistor : thermistorPortsList) {
+        if(thermistor->name == thermistorName){
+            return thermistor->id;
         }
     }
     Serial.printf("No thermistor with name %s found\n", thermistorName.c_str());
@@ -446,7 +460,16 @@ uint16_t getPortStatus(){
     if(globalControllerType == "FanCoilController"){
         status = globalADCOutput.isOn ? 0b1 : 0b0;
         return status;
-    }else{
+    } else if(globalControllerType == "HeatPumpController"){
+        uint16_t bitPosition = 0; // Track the bit position for each zone
+        for (stageOutput& stage : stageOutputsList) {
+            bool thisStatus = stage.isOpen;
+            if (thisStatus) {
+                status |= (1 << bitPosition); // Set the corresponding bit to 1
+            }
+            bitPosition++; // Move to the next bit position
+        }
+    } else{
         uint16_t bitPosition = 0; // Track the bit position for each zone
         for (zoneOutput& zone : zoneOutputsList) {
             bool thisStatus = zone.isOpen;

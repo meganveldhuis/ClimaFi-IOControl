@@ -35,13 +35,13 @@ float thermistorPort::getTemp(){
 }
 
 ADCThermistor::ADCThermistor(String name, uint8_t number, uint8_t id)
-    : thermistorPort(name, number, id), I2CBus(0)
+    : thermistorPort(name, number, id)
 {
-    ads = Adafruit_ADS1115();
-    I2CBus.begin(17, 18);
-    if(!ads.begin(0x48, &I2CBus)){
-        Serial.println("Failed to initialize ADS.");
-    }
+//     ads = Adafruit_ADS1115();
+//     I2CBus.begin(I2C_SDA, I2C_SCL);
+//     if(!ads.begin(0x48, &I2CBus)){
+//         Serial.println("Failed to initialize ADS.");
+//     }
 }
 
 float ADCThermistor::getTemp(){
@@ -55,9 +55,7 @@ float ADCThermistor::getTemp(){
     Serial.print("AIN1: "); Serial.print(adc); Serial.print("  "); Serial.print(volts); Serial.println("V");
 
     float v = adc * (3.3 / 65535);
-    Serial.println(v);
     v = adc * 0.0001875;     // Using default TwoThirds gain = 0.1875mV per 1-bit
-    Serial.println(v);
 
     float a = 639.5f, b = -0.1332f, c = -162.5f;
     float Rntc, Vntc, TempC, TempF;
@@ -68,7 +66,7 @@ float ADCThermistor::getTemp(){
     if (fabs(TempC - 403.28) < 0.01 || fabs(TempF - 757.90) < 0.01) {
         Serial.printf("Error: Thermistor not connected\n");
     }
-    Serial.printf("Thermistor 1 read ");
+    Serial.printf("Thermistor %s read ", name);
     Serial.println(TempC);
     return TempC;
 }

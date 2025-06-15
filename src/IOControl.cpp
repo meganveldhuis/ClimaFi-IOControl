@@ -1,18 +1,18 @@
 #include "IOControl.h"
 
-// Define and initialize global components
-std::vector<zoneOutput> zoneOutputsList;
-std::vector<stageOutput> stageOutputsList;
-std::vector<AUXRelay> AUXRelaysList;
-std::vector<thermistorPort*> thermistorPortsList; //need to use a pointer in order for Polymorphism to work (and have an ADCThermistor object inside the vector)
-std::vector<thermostat> thermostatList;
+// // Define and initialize global components
+// std::vector<zoneOutput> zoneOutputsList;
+// std::vector<stageOutput> stageOutputsList;
+// std::vector<AUXRelay> AUXRelaysList;
+// std::vector<thermistorPort*> thermistorPortsList; //need to use a pointer in order for Polymorphism to work (and have an ADCThermistor object inside the vector)
+// std::vector<thermostat> thermostatList;
 
-std::map<String, bool> thermostatStates;
+// std::map<String, bool> thermostatStates;
 
-ADCOutput globalADCOutput("", "", 1, 0, "");
-endSwitch globalThermostatEndSwitch(true, false);
-endSwitch globalZoneEndSwitch(false, false);
-String globalControllerType = "";
+// ADCOutput globalADCOutput("", "", 1, 0, "");
+// endSwitch globalThermostatEndSwitch(true, false);
+// endSwitch globalZoneEndSwitch(false, false);
+// String globalControllerType = "";
 
 void formatLittleFS() {
   Serial.println("Formatting LittleFS...");
@@ -150,11 +150,6 @@ bool createControllerClasses(JsonDocument doc){
             if(component["componentType"] == "thermistorPort"){
                 int number = 1;
                 for (JsonObject dataItem : data) {
-                    // thermistorPort thermistor(
-                    //     dataItem["name"].as<String>(),
-                    //     number,
-                    //     dataItem["id"].as<uint8_t>()
-                    // );
                     thermistorPortsList.push_back(new thermistorPort(dataItem["name"].as<String>(),
                         number,
                         dataItem["id"].as<uint8_t>())
@@ -191,7 +186,13 @@ bool createControllerClasses(JsonDocument doc){
             } else if(component["componentType"] == "demandSignals"){ // thermostat demands
                 initThermostats(data);
             } else if(component["componentType"] == "thermistor"){ // thermistors (x 8)
-                int number = 1;
+                // TwoWire I2CBus = TwoWire(0);
+                // Adafruit_ADS1115 ads;
+                // I2CBus.begin(17, 18);
+                // if(!ads.begin(0x48, &I2CBus)){
+                //     Serial.println("Failed to initialize ADS.");
+                // }
+                uint8_t number = 1;
                 for (JsonObject dataItem : data) {
                     thermistorPortsList.push_back(new ADCThermistor(
                         dataItem["name"].as<String>(),

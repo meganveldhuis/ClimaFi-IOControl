@@ -55,4 +55,7 @@
 
 #define COIL_PWM_HPC_PIN 38
 
+#define I2C_SDA 17
+#define I2C_SCL 18
+
 #endif

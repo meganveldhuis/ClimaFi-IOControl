@@ -13,11 +13,3 @@ ADCOutput globalADCOutput("", "", 1, 0, "");
 endSwitch globalThermostatEndSwitch(true, false);
 endSwitch globalZoneEndSwitch(false, false);
 String globalControllerType = "";
-
-
-TwoWire I2CBus = TwoWire(0);
-Adafruit_ADS1115 ads;
-
-void initializeGlobals() {
-    I2CBus.begin(I2C_SDA, I2C_SCL); // Initialize I2C bus
-}

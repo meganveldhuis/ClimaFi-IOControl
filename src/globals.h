@@ -4,8 +4,6 @@
 #include <vector>
 #include <map>
 #include <Arduino.h>
-#include <Adafruit_ADS1X15.h>
-#include <Wire.h>
 
 #include "pin_defines.h"
 #include "components/zoneOutput.h"
@@ -31,8 +29,5 @@ extern ADCOutput globalADCOutput;
 extern endSwitch globalThermostatEndSwitch;
 extern endSwitch globalZoneEndSwitch;
 extern String globalControllerType;
-
-extern TwoWire I2CBus;
-extern Adafruit_ADS1115 ads;
 
 #endif

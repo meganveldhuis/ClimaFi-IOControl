@@ -186,21 +186,7 @@ bool createControllerClasses(JsonDocument doc){
             } else if(component["componentType"] == "demandSignals"){ // thermostat demands
                 initThermostats(data);
             } else if(component["componentType"] == "thermistor"){ // thermistors (x 8)
-                // TwoWire I2CBus = TwoWire(0);
-                // Adafruit_ADS1115 ads;
-                // I2CBus.begin(17, 18);
-                // if(!ads.begin(0x48, &I2CBus)){
-                //     Serial.println("Failed to initialize ADS.");
-                // }
-                uint8_t number = 1;
-                for (JsonObject dataItem : data) {
-                    thermistorPortsList.push_back(new ADCThermistor(
-                        dataItem["name"].as<String>(),
-                        number,
-                        dataItem["id"].as<uint8_t>())
-                    );
-                    number++;
-                }
+                // These are populated in the HeatPumpController's code due to shared I2C Bus
             }
         }
         return true;
@@ -406,9 +392,9 @@ bool areAllThermostatsOff() {
     return true; // All thermostats are off
 }
 
-float getThermistorTemp(String thermistorName){
+float __attribute__((weak)) getThermistorTemp(String thermistorName){
     /* 
-        @brief Get the temperature from an inputted thermistor
+        @brief Get the temperature from an inputted thermistor. Weak attribute for heat pump controller's thermistors
         @param thermistorName The name of the thermistor
         @return The temperature read from the given thermistor
     */

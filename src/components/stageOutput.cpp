@@ -31,7 +31,7 @@ stageOutput::stageOutput(uint8_t stageNum, String stageName, String thermostatID
         digitalWrite(_pin, LOW);
     }
 
-    isOpen = false;
+    this->isOpen = false;
 }
 
 uint8_t stageOutput::checkTemp(String thermostatID, float currentTemp){
@@ -42,31 +42,31 @@ uint8_t stageOutput::checkTemp(String thermostatID, float currentTemp){
     if(this->thermostatID != thermostatID){
         return NO_CHANGE;
     }
-    Serial.printf("Set Point for %s : %.2f. Current temp detected: %.2f. Cooling? %d\n",stageName.c_str(), setPoint, currentTemp, isCool);
+    Serial.printf("Set Point for %s : %.2f. Current temp detected: %.2f. Cooling? %d Open? %d\n",stageName.c_str(), setPoint, currentTemp, isCool, this->isOpen);
     if(_pin == 0){
         Serial.println("No pin found. Aborting.");
         return NO_CHANGE;
     }
     if(setPoint > currentTemp){ // Too Cold
         if(isCool){
-            if(isOpen){ //only close an opened port
+            if(this->isOpen){ //only close an opened port
                 close();
                 return CLOSED_PORT;
             }
         }else{
-            if(!isOpen){ // only open a closed port
+            if(!this->isOpen){ // only open a closed port
                 open();
                 return OPENED_PORT;
             }
         }
     }else{ // Too Hot
         if(isCool){
-            if(!isOpen){
+            if(!this->isOpen){
                 open();
                 return OPENED_PORT;
             }
         }else{
-            if(isOpen){
+            if(this->isOpen){
                 close();
                 return CLOSED_PORT;
             }
@@ -80,21 +80,21 @@ bool stageOutput::isThermostatIDRelevant(String thermostatID){
 }
 
 void stageOutput::open(){
-    if(!isOpen){
-        Serial.printf("Opening pin: %d, which is in %s\n", _pin, stageName.c_str());
+    if (!this->isOpen) {
+        Serial.printf("Opening pin: %d, which is in %s. Is open: %d\n", _pin, stageName.c_str(), this->isOpen);
         digitalWrite(_pin, HIGH);
         this->isOpen = true;
-        return;
+        Serial.printf("Pin %d is now open. Is open: %d\n", _pin, this->isOpen);
     }
     return;
 }
 
 void stageOutput::close(){
-    if(isOpen){
-        Serial.printf("Closing pin: %d, which is in %s\n", _pin, stageName.c_str());
+    if (this->isOpen) {
+        Serial.printf("Closing pin: %d, which is in %s. Is open: %d\n", _pin, stageName.c_str(), this->isOpen);
         digitalWrite(_pin, LOW);
-        isOpen = false;
-        return;
+        this->isOpen = false;
+        Serial.printf("Pin %d is now closed. Is open: %d\n", _pin, this->isOpen);
     }
     return;
 }

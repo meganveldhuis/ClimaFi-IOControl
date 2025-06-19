@@ -47,7 +47,17 @@ void initZoneOutputs(JsonArray data){
 
 void initStageOutputs(JsonArray data){
     for (JsonObject dataItem : data) {
-        stageOutput stage(
+        // stageOutput stage(
+        //     dataItem["stageNum"].as<uint8_t>(),
+        //     dataItem["stageName"].as<String>(),
+        //     dataItem["thermostatID"].as<String>(),
+        //     dataItem["rank"].as<uint8_t>(),
+        //     dataItem["setPoint"].as<float>(),
+        //     dataItem["isCool"].as<bool>(),
+        //     dataItem["isPump"].as<bool>()
+        // );
+        // stageOutputsList.push_back(stage);
+        stageOutputsList.push_back(new stageOutput(
             dataItem["stageNum"].as<uint8_t>(),
             dataItem["stageName"].as<String>(),
             dataItem["thermostatID"].as<String>(),
@@ -55,8 +65,7 @@ void initStageOutputs(JsonArray data){
             dataItem["setPoint"].as<float>(),
             dataItem["isCool"].as<bool>(),
             dataItem["isPump"].as<bool>()
-        );
-        stageOutputsList.push_back(stage);
+        ));
     }
 }
 
@@ -218,7 +227,11 @@ void updateControls(){
     thermistorPortsList.clear();
 
     zoneOutputsList.clear();
+    for (auto stage : stageOutputsList) {
+        delete stage;
+    }
     stageOutputsList.clear();
+
     AUXRelaysList.clear();
     thermostatList.clear();
     thermostatStates.clear();
@@ -241,9 +254,13 @@ void tempUpdated(String thermostatID, float currentTemp){
     */
     if(globalControllerType == "FanCoilController"){
         globalADCOutput.checkTemp(thermostatID, currentTemp);
-    }else{ // zone valve or pump controller:
+    } else if(globalControllerType == "HeatPumpController"){
+        for (auto stage : stageOutputsList) {
+            uint8_t response = stage->checkTemp(thermostatID, currentTemp);
+        }
+    } else{ // zone valve or pump controller:
         for (zoneOutput& zone : zoneOutputsList) {
-            int response = zone.checkTemp(thermostatID, currentTemp);
+            uint8_t response = zone.checkTemp(thermostatID, currentTemp);
         }
         // turn on zone end switch outside of this function
     }
@@ -266,12 +283,12 @@ void stateChanged(String thermostatID, bool isThermostatOn){
             }
         }
     } else if(globalControllerType == "HeatPumpController"){
-        for (stageOutput& stage : stageOutputsList) {
-            if(stage.isThermostatIDRelevant(thermostatID)){ //check if thermostatID is relevant
+        for (stageOutput* stage : stageOutputsList) {
+            if(stage->isThermostatIDRelevant(thermostatID)){ //check if thermostatID is relevant
                 if(isThermostatOn){
-                    stage.open();
+                    stage->open();
                 }else{
-                    stage.close();
+                    stage->close();
                 }
             }
         }
@@ -437,8 +454,8 @@ uint16_t getPortStatus(){
         return status;
     } else if(globalControllerType == "HeatPumpController"){
         uint16_t bitPosition = 0; // Track the bit position for each zone
-        for (stageOutput& stage : stageOutputsList) {
-            bool thisStatus = stage.isOpen;
+        for (stageOutput* stage : stageOutputsList) {
+            bool thisStatus = stage->isOpen;
             if (thisStatus) {
                 status |= (1 << bitPosition); // Set the corresponding bit to 1
             }

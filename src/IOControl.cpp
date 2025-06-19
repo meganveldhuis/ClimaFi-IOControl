@@ -30,7 +30,7 @@ JsonDocument readData(fs::FS &fs, const char * path, bool printDoc){
 
 void initZoneOutputs(JsonArray data){
     for (JsonObject dataItem : data) {
-        zoneOutput zone(
+        zoneOutputsList.push_back(new zoneOutput(
             dataItem["zoneNum"].as<uint8_t>(), //this is the "zone number" as displayed on the PCB
             dataItem["zoneID"].as<String>(),
             dataItem["zoneName"].as<String>(), 
@@ -40,23 +40,12 @@ void initZoneOutputs(JsonArray data){
             dataItem["isCool"].as<bool>(),
             dataItem["isPump"].as<bool>(),
             globalControllerType
-        );
-        zoneOutputsList.push_back(zone);
+        ));
     }
 }
 
 void initStageOutputs(JsonArray data){
     for (JsonObject dataItem : data) {
-        // stageOutput stage(
-        //     dataItem["stageNum"].as<uint8_t>(),
-        //     dataItem["stageName"].as<String>(),
-        //     dataItem["thermostatID"].as<String>(),
-        //     dataItem["rank"].as<uint8_t>(),
-        //     dataItem["setPoint"].as<float>(),
-        //     dataItem["isCool"].as<bool>(),
-        //     dataItem["isPump"].as<bool>()
-        // );
-        // stageOutputsList.push_back(stage);
         stageOutputsList.push_back(new stageOutput(
             dataItem["stageNum"].as<uint8_t>(),
             dataItem["stageName"].as<String>(),
@@ -71,7 +60,7 @@ void initStageOutputs(JsonArray data){
 
 void initAuxRelays(JsonArray data){
     for (JsonObject dataItem : data) {
-        AUXRelay relay(
+        AUXRelaysList.push_back(new AUXRelay(
             dataItem["relayNum"].as<uint8_t>(),
             dataItem["relayName"].as<String>(),
             dataItem["thermostatID"].as<String>(),
@@ -80,21 +69,19 @@ void initAuxRelays(JsonArray data){
             dataItem["isCool"].as<bool>(),
             dataItem["isPump"].as<bool>(),
             dataItem["isReverse"].as<bool>()
-        );
-        AUXRelaysList.push_back(relay);
+        ));
     }
 }
 
 void initThermostats(JsonArray data){
     for (JsonObject dataItem : data) {
-        thermostat thermostatInstance(
+        thermostatList.push_back(new thermostat(
             dataItem["thermostatNum"].as<uint8_t>(),
             dataItem["thermostatID"].as<String>(),
             dataItem["name"].as<String>(),
             dataItem["type"].as<uint8_t>(),
             globalControllerType
-        );
-        thermostatList.push_back(thermostatInstance);
+        ));
     }
 }
 
@@ -259,8 +246,8 @@ void tempUpdated(String thermostatID, float currentTemp){
             uint8_t response = stage->checkTemp(thermostatID, currentTemp);
         }
     } else{ // zone valve or pump controller:
-        for (zoneOutput& zone : zoneOutputsList) {
-            uint8_t response = zone.checkTemp(thermostatID, currentTemp);
+        for (zoneOutput* zone : zoneOutputsList) {
+            uint8_t response = zone->checkTemp(thermostatID, currentTemp);
         }
         // turn on zone end switch outside of this function
     }
@@ -293,12 +280,12 @@ void stateChanged(String thermostatID, bool isThermostatOn){
             }
         }
     } else{ // zone valve or pump controller:
-        for (zoneOutput& zone : zoneOutputsList) {
-            if(zone.isThermostatIDRelevant(thermostatID)){ //check if thermostatID is relevant
+        for (zoneOutput* zone : zoneOutputsList) {
+            if(zone->isThermostatIDRelevant(thermostatID)){ //check if thermostatID is relevant
                 if(isThermostatOn){
-                    zone.open();
+                    zone->open();
                 }else{
-                    zone.close();
+                    zone->close();
                 }
             }
         }
@@ -349,9 +336,9 @@ bool updateSetPoint(float newSetPoint, String zoneID, String fanCoilName){
     }
     file.close();
 
-    for (zoneOutput& zone : zoneOutputsList) {
-        if(zone.zoneID == zoneID){
-            zone.setPoint = newSetPoint;
+    for (zoneOutput* zone : zoneOutputsList) {
+        if(zone->zoneID == zoneID){
+            zone->setPoint = newSetPoint;
         }
     }
     if(globalADCOutput.name == fanCoilName){
@@ -367,9 +354,9 @@ bool isZoneOpen(String zoneID){
         @param zoneID The ID of the zone
         @return The status (true if open, false if closed) of the valve/pump
     */
-    for (zoneOutput& zone : zoneOutputsList) {
-        if(zone.zoneID == zoneID){
-            return zone.isOpen;
+    for (zoneOutput* zone : zoneOutputsList) {
+        if(zone->zoneID == zoneID){
+            return zone->isOpen;
         }
     }
     Serial.printf("No zone with id %d found\n", zoneID);
@@ -434,9 +421,9 @@ bool isThermostatOn(String thermostatID){
         @return the status (bool) of the wired thermostat - true is On, false is Off
     */
     // check state of (wired) thermostat : is it on or off
-    for (thermostat& thermostat : thermostatList) {
-        if (thermostat.id == thermostatID) {
-            return thermostat.isOn();
+    for (thermostat* thermostat : thermostatList) {
+        if (thermostat->id == thermostatID) {
+            return thermostat->isOn();
         }
     }
     Serial.printf("No thermostat with id %d found\n", thermostatID);
@@ -463,8 +450,8 @@ uint16_t getPortStatus(){
         }
     } else{
         uint16_t bitPosition = 0; // Track the bit position for each zone
-        for (zoneOutput& zone : zoneOutputsList) {
-            bool thisStatus = zone.isOpen;
+        for (zoneOutput* zone : zoneOutputsList) {
+            bool thisStatus = zone->isOpen;
             if (thisStatus) {
                 status |= (1 << bitPosition); // Set the corresponding bit to 1
             }

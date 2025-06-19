@@ -17,11 +17,11 @@
 class thermistorPort;
 
 // Global variables
-extern std::vector<zoneOutput> zoneOutputsList;
+extern std::vector<zoneOutput*> zoneOutputsList;
 extern std::vector<stageOutput*> stageOutputsList;
-extern std::vector<AUXRelay> AUXRelaysList;
+extern std::vector<AUXRelay*> AUXRelaysList;
 extern std::vector<thermistorPort*> thermistorPortsList; // Polymorphism
-extern std::vector<thermostat> thermostatList;
+extern std::vector<thermostat*> thermostatList;
 
 extern std::map<String, bool> thermostatStates;
 

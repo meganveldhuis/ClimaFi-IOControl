@@ -12,6 +12,7 @@ endSwitch	KEYWORD1
 thermistorPort	KEYWORD1
 thermostat	KEYWORD1
 zoneOutput	KEYWORD1
+stageOutput	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)

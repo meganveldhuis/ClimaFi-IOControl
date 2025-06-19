@@ -22,7 +22,7 @@
 
 void formatLittleFS();
 
-JsonDocument readData(fs::FS &fs, const char * path);
+JsonDocument readData(fs::FS &fs, const char * path, bool printDoc = true);
 
 
 void initZoneOutputs(JsonArray data);

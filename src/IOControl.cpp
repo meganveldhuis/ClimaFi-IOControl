@@ -1,26 +1,12 @@
 #include "IOControl.h"
 
-// // Define and initialize global components
-// std::vector<zoneOutput> zoneOutputsList;
-// std::vector<stageOutput> stageOutputsList;
-// std::vector<AUXRelay> AUXRelaysList;
-// std::vector<thermistorPort*> thermistorPortsList; //need to use a pointer in order for Polymorphism to work (and have an ADCThermistor object inside the vector)
-// std::vector<thermostat> thermostatList;
-
-// std::map<String, bool> thermostatStates;
-
-// ADCOutput globalADCOutput("", "", 1, 0, "");
-// endSwitch globalThermostatEndSwitch(true, false);
-// endSwitch globalZoneEndSwitch(false, false);
-// String globalControllerType = "";
-
 void formatLittleFS() {
   Serial.println("Formatting LittleFS...");
   LittleFS.format();
   Serial.println("LittleFS formatted.");
 }
 
-JsonDocument readData(fs::FS &fs, const char * path){
+JsonDocument readData(fs::FS &fs, const char * path, bool printDoc){
     JsonDocument doc;
     File file = fs.open(path, "r");
     if (!file) {
@@ -35,7 +21,9 @@ JsonDocument readData(fs::FS &fs, const char * path){
         Serial.println(error.f_str());
         return doc;
     }
-    serializeJsonPretty(doc, Serial);
+    if(printDoc){
+        serializeJsonPretty(doc, Serial);
+    }
     return doc;
 }
 

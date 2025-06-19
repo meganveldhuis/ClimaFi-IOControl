@@ -29,9 +29,9 @@ void initZoneOutputs(JsonArray data);
 void initStageOutputs(JsonArray data);
 void initAuxRelays(JsonArray data);
 void initThermostats(JsonArray data);
-bool createControllerClasses(JsonDocument doc);
+bool createControllerClasses(JsonDocument doc, TwoWire* I2CBus);
 
-bool controlSetup();
+bool controlSetup(TwoWire* I2CBus = nullptr);
 void updateControls();
 
 void tempUpdated(String thermostatID, float currentTemp);

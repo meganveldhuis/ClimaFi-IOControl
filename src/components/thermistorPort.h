@@ -5,6 +5,9 @@
 #include "pin_defines.h"
 #include "globals.h"
 
+#include <Adafruit_ADS1X15.h>
+#include <Wire.h>
+
 class thermistorPort{
     public:
         String name;
@@ -16,7 +19,15 @@ class thermistorPort{
 
     private:
         uint8_t _pin;
+};
 
+class ADCThermistor: public thermistorPort {
+    public:
+        float getTemp();
+        ADCThermistor(String name, uint8_t number, uint8_t id, TwoWire* I2CBus, uint8_t i2cAddress);
+    private:
+        Adafruit_ADS1115 ads;
+    //     TwoWire I2CBus;
 };
 
 #endif

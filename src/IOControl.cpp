@@ -85,7 +85,7 @@ void initThermostats(JsonArray data){
     }
 }
 
-bool createControllerClasses(JsonDocument doc){
+bool createControllerClasses(JsonDocument doc, TwoWire* I2CBus){
 
     JsonObject controllerTypes = doc["controllerTypes"];
     JsonArray components = doc["components"];
@@ -171,6 +171,17 @@ bool createControllerClasses(JsonDocument doc){
                 initThermostats(data);
             } else if(component["componentType"] == "thermistor"){ // thermistors (x 8)
                 // These are populated in the HeatPumpController's code due to shared I2C Bus
+                uint8_t number = 1;
+                for (JsonObject dataItem : data) {
+                    uint8_t i2cAddress = (number <= 4) ? 0x48 : 0x49;
+                    thermistorPortsList.push_back(new ADCThermistor(
+                        dataItem["name"].as<String>(),
+                        number,
+                        dataItem["id"].as<uint8_t>(),
+                        I2CBus, i2cAddress
+                    ));
+                    number++;
+                }
             }
         }
         return true;
@@ -184,7 +195,7 @@ bool createControllerClasses(JsonDocument doc){
 
 // ------------------ Library functions to use in other files ------------------ //
 
-bool controlSetup(){
+bool controlSetup(TwoWire* I2CBus){
     /* 
         @brief Setup the control components based on the settings.json file
         @return If successful, will return true. if there was an error (opening the settings.json file or detecting the controller type), will return false.
@@ -199,7 +210,7 @@ bool controlSetup(){
         }
     }
     doc = readData(LittleFS, "/settings.json");
-    bool created = createControllerClasses(doc);
+    bool created = createControllerClasses(doc, I2CBus);
     return created;
 }
 
